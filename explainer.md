@@ -174,7 +174,9 @@ paymentInstrument: {
 
 ### Payment Instruments or Schemes?
 
-Payment instruments can be a loaded term, and the line between instrument and scheme, particulary in this document, is a blurry one. For the sake of simplicity, I have referred to any thing the user chooses to pay for something as a 'payment instrument'.
+Nomenclature is hard. Payment instruments can be a loaded term, and the line between instrument and scheme, particulary in this document, is a blurry one. For the sake of simplicity, I have referred to any thing the user chooses to pay for something as a 'payment instrument'.
+
+But the complexity doesn't quite end there. In reality, some payment instruments will only be supported by a single entity while others can technically be supported by multiple entities. As an example, take your standard credit or debit card. A user could have multiple "payment instruments" installed that can return back a valid credit/debit card. Examples of these might include OnePassword and Chrome's Autofill. Both applications would want to register as supported payment instruments for your standard schemes (e.g. Visa, MC, Discover, etc). Other payment instruments (e.g. PayPal), would only be supported by a single entity (e.g. PayPal.com) and no one else should be able to register under that instrument name. What is the right labeling? Should we standardize particular intrument types (e.g. credit cards) and expected responses? Should the UA have to know what are "common" instrument as opposed to private instruments?
 
 ### Open Questions
 
