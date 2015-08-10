@@ -178,8 +178,7 @@ Payment instruments can be a loaded term, and the line between instrument and sc
 
 ### Open Questions
 
+  - Should we standardize the response for "general" payment instruments (e.g. standard credit/debit cards?)
   - Subscriptions - only select payment instruments with recurring billing
-  - Shipping (let the developer supply options)?
-  - Desktop. How?
+  - Desktop. How? iFrames? How much do we standardize?
   - Do we support general schemes? e.g. ACH that anyone can work with or only Dwolla?
-  - Push payments?
