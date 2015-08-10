@@ -19,7 +19,8 @@ In addition to better, more consistent user experiences across all sites, this a
 
 1. Website requests payment with supported payment instruments
 1. UA presents to user a list of payment instruments supported by merchant and installed by user as well as shipping options
-1. User selects payment instrument of choice and necessary data is passed to payment instrument
+1. User selects payment instrument of choice and, if shipping address is requested, selects or inputs a shipping address. 
+1. Total transaction amount and other necessary data is passed to payment instrument for further processing.
 1. Payment instrument returns back relevant data (e.g. credit card number, token, transaction ID) after successful authorization or transaction to UA
 1. Data is passed through UA back to merchant
 
@@ -136,7 +137,9 @@ pr.addEventListener('error', function(event) {
 
 ### Shipping
 
-Physical good transactions are the majority of e-commerce transactions on the mobile web. Merchants need a way to pass different shipping options into the paymentRequest. These options may be address-dependent, so if a user selects or adds a new address in the middle of a request, the merchant may need to update shipping options and prices. 
+Physical good transactions are the majority of e-commerce transactions on the mobile web. Merchants need a way to pass different shipping options into the paymentRequest. These options may be address-dependent, so if a user selects or adds a new address in the middle of a request, the merchant may need to update shipping options and prices.
+
+Shipping options and address selection is handled by the UA. The payment instrument has no notion of where the thing being purchased is shipped to.
 
 ```js
 var shippingOptions = [
