@@ -1,17 +1,17 @@
 # Better Web Payments
 
-### Payments are hard
+### The problem - payments are hard
 
-Buying things on the web, particularly on mobile, is a frustrating experience for users. Every website has its own flow, its own validation rules, and most require users to manually type in the same set of information over and over again. Likewise, it is difficult and time consuming for developers to create good checkout flows that support various payment schemes.
+Buying things on the web, particularly on mobile, is a frustrating experience for users. Every website has its own flow and its own validation rules, and most require users to manually type in the same set of information over and over again. Likewise, it is difficult and time consuming for developers to create good checkout flows that support various payment schemes.
 
-We can fix this by allowing the User-Agent to act as a proxy between the three key parties in every transaction: The Merchant, the Buyer, and the Payment Instrument. Information necessary to process and confirm a transaction is passed between the Payment Instrument and the Merchant via the User-Agent with the User confirming and authing as necessary across the flow.
+We can fix this by allowing the User-Agent to act as an intermediary between the three key parties in every transaction: The Merchant, the Buyer, and the Payment Instrument. Information necessary to process and confirm a transaction is passed between the Payment Instrument and the Merchant via the User-Agent with the User confirming and authing as necessary across the flow.
 
-In addition to better, more consistent user experiences across all sites, this also enables websites to take advantage more secure payment schemes (e.g. tokenization and system-level authentication). This reduces liability for the merchant and helps protect sensitive user information.
+In addition to better, more consistent user experiences, this also enables websites to take advantage of more secure payment schemes (e.g. tokenization and system-level authentication). This reduces liability for the merchant and helps protect sensitive user information.
 
 ### Goals
 
   - Standardize the communication flow between a merchant (website), user-agent, and payment instrument
-  - User-agent acts as proxy between merchant and user-installed payment instruments
+  - User-agent acts as intermediary between merchant and user-installed payment instruments
   - Easy installation and removal of payment instruments for users
   - Bring more secure payment methods to the web
 
@@ -162,16 +162,22 @@ var shippingOptions = [
 
 Web site owners can declare they have a supported payment instrument via their [Manifest](https://developers.google.com/web/updates/2014/11/Support-for-installable-web-apps-with-webapp-manifest-in-chrome-38-for-Android?hl=en). User-Agents, upon seeing this declaration, can present to the user the option of installing the payment instrument. 
 
-Payent instrument installation is platform-dependent (i.e. mobile may work differntly than desktop).
+Payment instrument installation is platform-dependent (i.e. mobile may work differntly than desktop).
 
 ```js
-paymentInstrument: {
-    instrumentName: "bobsPayments"
-    label: 'Bob\'s Payments',
-    description: 'Bob\'s Payments will make all your payment dreams come true',
-    embeddableURL: 'https://bobspayments.com/payment-request/',
-    appleAppStore: '...',
-    googlePlayStore: '...'
+"payment_instrument": {
+    "label": 'Bob\'s Payments',
+    "description": 'Bob\'s Payments will make all your payment dreams come true',
+    "embeddable_url": 'https://bobspayments.com/payment-request/',
+    "related_applications": [
+      {
+        "platform": "play",
+        "url": "https://play.google.com/store/apps/details?id=com.example.app1",
+        "id": "com.example.app1"
+      }, {
+        "platform": "itunes",
+        "url": "https://itunes.apple.com/app/example-app1/id123456789",
+      }]
 }
 ```
 
