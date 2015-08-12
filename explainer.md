@@ -1,28 +1,38 @@
 # Better Web Payments
 
-### The problem - payments are hard
+### What is this?
+
+This is a proposal for a new web API that will allow merchants (i.e. websites selling physical or digital goods) to easily accept payments from multiple payment schemes with minimal integration.
+
+### Why do we care?
 
 Buying things on the web, particularly on mobile, is a frustrating experience for users. Every website has its own flow and its own validation rules, and most require users to manually type in the same set of information over and over again. Likewise, it is difficult and time consuming for developers to create good checkout flows that support various payment schemes.
 
-We can fix this by allowing the User-Agent to act as an intermediary between the three key parties in every transaction: The Merchant, the Buyer, and the Payment Instrument. Information necessary to process and confirm a transaction is passed between the Payment Instrument and the Merchant via the User-Agent with the User confirming and authing as necessary across the flow.
+We can fix this by allowing the User-Agent to act as an intermediary between three key parties in every transaction: The Merchant, the Buyer, and the Payment Instrument. Information necessary to process and confirm a transaction is passed between the Payment Instrument and the Merchant via the User-Agent with the Buyer confirming and authing as necessary across the flow.
 
 In addition to better, more consistent user experiences, this also enables websites to take advantage of more secure payment schemes (e.g. tokenization and system-level authentication). This reduces liability for the merchant and helps protect sensitive user information.
 
 ### Goals
 
-  - Standardize the communication flow between a merchant (website), user-agent, and payment instrument
-  - User-agent acts as intermediary between merchant and user-installed payment instruments
-  - Easy installation and removal of payment instruments for users
+  - Allow the user-agent to act as facilitator between merchants, users, and payment instruments
+  - Standardize the communication flow between a merchant, user-agent, and payment instrument
+  - Easy installation/registration and removal of payment instruments for users
   - Bring more secure payment methods to the web
+
+### Non-goals
+
+  - Not trying to create a new payment scheme
+  - Not trying to integrate directly with payment processors
 
 ### Payment Request Lifecycle
 
-1. Website requests payment with supported payment instruments
-1. UA presents to user a list of payment instruments supported by merchant and installed by user as well as shipping options
+1. Merchant requests payment with supported payment instruments
+1. UA presents to user a list of payment instruments supported by merchant and installed by user as well as shipping options and address input/selection
 1. User selects payment instrument of choice and, if shipping address is requested, selects or inputs a shipping address. 
 1. Total transaction amount and other necessary data is passed to payment instrument for further processing.
 1. Payment instrument returns back relevant data (e.g. credit card number, token, transaction ID) after successful authorization or transaction to UA
 1. Data is passed through UA back to merchant
+2. Merchant finalizes transaction
 
 A payment instrument can fundamentally take one of two actions: 1.) It can return back data necessary to finalize the transaction (but the transaction remains non-finalized); or 2.) It can complete the transaction and return back proof of the completed transaction
 
@@ -30,23 +40,23 @@ An example of 1 would be a digital scheme like Apple Pay. Apple pay returns back
 
 ### Delineation of Roles
 
-**Website:** Responsible for calling `paymentRequest` on user action. Must be able to handle and parse response from supported payment instruments.
+**Merchant:** Responsible for calling `paymentRequest` on user action. Must be able to handle and parse response from supported payment instruments.
 
-**User-Agent:** Acts as a selection agent for various user-installed payment instruments. Handles payment instrument selection and may handle address selection and input.
+**User-Agent:** Acts as a selection agent for various user-installed payment instruments. Handles payment instrument selection and may handle address selection and input. Responsible for passing transaction details between merchant and payment instrument.
 
-**Payment Instrument:** Fulfills a paymentRequest by passing back data a website can use to either finalize a transaction or prove a transaction has already been completed. 
+**Payment Instrument:** Fulfills a paymentRequest by passing back data a merchant can use to either finalize a transaction or prove a transaction has already been completed. 
 
 ### Basic Flow
 
-To get started, a merchant creates a payment request. A payment request tells the browser what instruments or schemes are supported by the website, the amount of the transaction, and any other necessary scheme-specific information that may be necessary to process the transaction.
+To get started, a merchant creates a payment request. A payment request tells the browser what instruments or schemes are supported by the merchant, the amount of the transaction, and any other necessary scheme-specific information that may be necessary to process the transaction.
 
 ```js
-var supportedInstruments = ['visa', 'bitcoin', 'bobpay'];
+var supportedInstruments = ["visa", "bitcoin", "bobpay.com"];
 
 var details = {
     amount: 5500, //cents
-    currencyCode: 'USD',
-    countryCode: 'US',
+    currencyCode: "USD",
+    countryCode: "US",
     requestShipping: true,
     shippingOptions: shippingOptions,
     recurring: false
@@ -54,23 +64,23 @@ var details = {
 
 // Optional identities for schemes/instruments
 var schemeData = {
-    'bobpay': {
-        merchantIdentifier: 'XXXX',
+    "bobpay.com": {
+        merchantIdentifier: "XXXX",
         bobPaySpecifcField: true
     },
-    'bitcoin': {
-        address: 'XXXX'
+    "bitcoin": {
+        address: "XXXX"
     }
 };
 
 var pr = paymentRequest(supportedInstruments, details, schemeData);
 
-pr.addEventListener('instrumentResponse', function(event) {
-    console.log('Hurray, valid response from: ', event.instrumentName);
+pr.addEventListener("instrumentResponse", function(event) {
+    console.log("Hurray, valid response from: ", event.instrumentName);
 });
 
-pr.addEventListener('error', function(event) {
-    console.log('Uh oh: ', event.reason);
+pr.addEventListener("error", function(event) {
+    console.log("Uh oh: ", event.reason);
 });
 ```
 
@@ -79,10 +89,6 @@ The `details` object is general to all payments. Any instrument-specific data is
 The User-Agent presents to the user the intersection of merchant-supported payment instruments and user-installed payment instruments. When the user selects a payment instrument, the User-Agent passes both `details` and instrument-specific data from `schemeData` off to selected intrument.
 
 The `paymentRequest` object will implement [EventTarget](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget).
-
-> ZK: Are strings the best way to handle payment instrument selection? How do we stop bad people from registering themselves as supported instruments for schemes they don't really support (e.g. bobpay pretending to support fredpay)?
-
-> ZK: I started off with paymentRequest() returning a promise, but given that we need to support shipping addresses, which mean communicating back with the merchant, the promise no longer seems like the [right move](https://www.w3.org/2001/tag/doc/promises-guide#one-time-events)
 
 Restrictions:
   - Page calling `paymentRequest` must be HTTPS
@@ -93,7 +99,7 @@ Restrictions:
 If `requestShipping` is enabled, the browser may provide address input ability for shipping. Shipping address changes may result in price or shipping option changes.
 
 ```js
-pr.addEventListener('shippingAddressChange', function(event) {
+pr.addEventListener("shippingAddressChange", function(event) {
     var newAddress = event.newAddress;
     console.log(newAddress.street, newAddress.city, newAddress.state, newAddress.zip, newAddress.country);
     // Return back new shipping options
@@ -102,14 +108,14 @@ pr.addEventListener('shippingAddressChange', function(event) {
 ```
 
 ```js
-pr.addEventListener('instrumentResponse', function(event) {
-    console.log('Hurray, valid response from: ', event.instrumentName, event.details);
+pr.addEventListener("instrumentResponse", function(event) {
+    console.log("Hurray, valid response from: ", event.instrumentName, event.details);
 });
 ```
 
 ```js
-pr.addEventListener('error', function(event) {
-    console.log('Oh no, so sad: ', event.reason);
+pr.addEventListener("error", function(event) {
+    console.log("Oh no, so sad: ", event.reason);
 });
 ```
 
@@ -123,8 +129,6 @@ pr.addEventListener('error', function(event) {
 
 > ZK: How many of these are actually necessary to standardize? Could we get away with just NoAvailablePaymentInstrument and 'UserCanceledRequest'?
 
-> ZK: What's the cleanest way for payment instruments to send back custom error messages? 
-
 `NoAvailablePaymentInstruments`
 
 `UserCanceledRequest`
@@ -133,13 +137,11 @@ pr.addEventListener('error', function(event) {
 
 `AuthFailure`
 
-`InadequateAccountBalance`
-
 ### Shipping
 
 Physical good transactions are the majority of e-commerce transactions on the mobile web. Merchants need a way to pass different shipping options into the paymentRequest. These options may be address-dependent, so if a user selects or adds a new address in the middle of a request, the merchant may need to update shipping options and prices.
 
-Shipping options and address selection is handled by the UA. The payment instrument has no notion of where the thing being purchased is shipped to.
+Shipping options and address selection/input is handled by the User-Agent. The payment instrument is not privy to shipping information.
 
 ```js
 var shippingOptions = [
@@ -162,33 +164,47 @@ var shippingOptions = [
 
 Web site owners can declare they have a supported payment instrument via their [Manifest](https://developers.google.com/web/updates/2014/11/Support-for-installable-web-apps-with-webapp-manifest-in-chrome-38-for-Android?hl=en). User-Agents, upon seeing this declaration, can present to the user the option of installing the payment instrument. 
 
-Payment instrument installation is platform-dependent (i.e. mobile may work differntly than desktop).
+Payment instrument installation is platform-dependent, and the manifest can hint at the most appropriate form of installation for a given platform.
 
 ```js
 "payment_instrument": {
-    "label": 'Bob\'s Payments',
-    "description": 'Bob\'s Payments will make all your payment dreams come true',
-    "embeddable_url": 'https://bobspayments.com/payment-request/',
+    "url": "bobspayments.com"
+    "label": "Bob\'s Payments",
+    "description": "Bob\'s Payments will make all your payment dreams come true",
+    "embeddable_url": "https://bobspayments.com/payment-request/",
     "related_applications": [
       {
         "platform": "play",
-        "url": "https://play.google.com/store/apps/details?id=com.example.app1",
+        "url": "https://play.google.com/store/apps/details?id=com.bobspayments.app1",
         "id": "com.example.app1"
       }, {
         "platform": "itunes",
-        "url": "https://itunes.apple.com/app/example-app1/id123456789",
+        "url": "https://itunes.apple.com/app/bobspayments/id123456789",
       }]
 }
 ```
 
-### Payment Instruments or Schemes?
+This spec assumes some mechanism to securely verify a relationship between a website and a native app (e.g. [Android App Links](http://developer.android.com/preview/features/app-linking.html).
 
-Nomenclature is hard. Payment instruments can be a loaded term, and the line between instrument and scheme, particulary in this document, is a blurry one. For the sake of simplicity, I have referred to any thing the user chooses to pay for something as a 'payment instrument'.
+### Web & Native
 
-But the complexity doesn't quite end there. In reality, some payment instruments will only be supported by a single entity while others can technically be supported by multiple entities. As an example, take your standard credit or debit card. A user could have multiple "payment instruments" installed that can return back a valid credit/debit card. Examples of these might include OnePassword and Chrome's Autofill. Both applications would want to register as supported payment instruments for your standard schemes (e.g. Visa, MC, Discover, etc). Other payment instruments (e.g. PayPal), would only be supported by a single entity (e.g. PayPal.com) and no one else should be able to register under that instrument name. What is the right labeling? Should we standardize particular intrument types (e.g. credit cards) and expected responses? Should the UA have to know what are "common" instrument as opposed to private instruments?
+User-Agents are free to determine the preferred payment instrument form for a given platform. For example, User-Agents on mobile devices may require that payment instruments be installed as native applications.
+
+Payment instruments should in their manifest file, however, point to an embeddable_url that can communicate via `postMessage` that implements the `paymentRequest` message protocol. This allows all user-agents to support a payment instrument with basic iFrame communication protocols.
+
+> ZK: How hard should we push to standardize something on desktop? Should we standardize that user-agents on desktops should support iFrames and postMessage? Or do we leave it up to the user-agents themselves to decide? I'm afraid if we leave it purely up to User-Agents, we are at risk for telling payment instruments that they have to write three different extensions for three different browsers. Thoughts?
+
+### Nomenclature
+
+"Payment instrument" can be a loaded term, and the line between instrument and scheme, particulary in this document, is a blurry one. For the sake of simplicity, I have referred to any thing the user selects and uses to pay for something as a 'payment instrument'.
+
+This has, of course, some obvious weaknesses. The primary weakness being some some "instruments" actually have instruments within them. One example of this would be Apple Pay. A user might say, "I want to pay with Apple Pay," but in reality, they are selecting a payment instrument within Apple Pay to pay with (e.g. A Bank of America Visa Card).
+
+In the future, we may want to better align these terms with the terms defined in the [Web Payments Working Group Charter](http://www.w3.org/2015/06/payments-wg-charter.html).
 
 ### Open Questions
 
+  - How can we let merchants know if a payment instrument is available before calling paymentRequest()?
   - Should we standardize the response for "general" payment instruments (e.g. standard credit/debit cards?)
   - Subscriptions - only select payment instruments with recurring billing
   - Desktop. How? iFrames? How much do we standardize?
