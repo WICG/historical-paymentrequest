@@ -44,7 +44,7 @@ An example of 1 would be a digital scheme like Apple Pay. Apple pay returns back
 
 **User-Agent:** Acts as a selection agent for various user-installed payment instruments. Handles payment instrument selection and may handle address selection and input. Responsible for passing transaction details between merchant and payment instrument.
 
-**Payment Instrument:** Fulfills a paymentRequest by passing back data a merchant can use to either finalize a transaction or prove a transaction has already been completed. 
+**Payment Instrument:** Fulfills a paymentRequest and passes back data a merchant can use to either finalize a transaction or prove a transaction has already been completed. 
 
 ### Basic Flow
 
