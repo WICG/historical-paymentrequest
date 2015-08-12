@@ -31,10 +31,10 @@ In addition to better, more consistent user experiences, this also enables websi
 1. User selects payment instrument of choice and, if shipping address is requested, selects or inputs a shipping address. 
 1. Total transaction amount and other necessary data is passed to payment instrument for further processing.
 1. Payment instrument returns back relevant data (e.g. credit card number, token, transaction ID) after successful authorization or transaction to UA
-1. Data is passed through UA back to merchant
-2. Merchant finalizes transaction
+1. UA passes data back to merchant
+2. Merchant finalizes and confirms transaction
 
-A payment instrument can fundamentally take one of two actions: 1.) It can return back data necessary to finalize the transaction (but the transaction remains non-finalized); or 2.) It can complete the transaction and return back proof of the completed transaction
+A payment instrument can fundamentally take one of two actions: 1.) It can return back data necessary to finalize the transaction (but the transaction remains non-finalized); or 2.) It can complete the transaction and return back proof of the completed transaction.
 
 An example of 1 would be a digital scheme like Apple Pay. Apple pay returns back data (e.g. a cryptogram) that the merchant must then submit to their processing partner to complete the transaction. An example of 2 might be a push payment like bitcoin, where the payment instrument is waiting to receive notification of successful transfer of funds.
 
