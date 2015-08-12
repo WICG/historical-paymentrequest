@@ -14,10 +14,10 @@ In addition to better, more consistent user experiences, this also enables websi
 
 ### Goals
 
-  - Allow the user-agent to act as facilitator between merchants, users, and payment instruments
+  - Allow the user-agent to act as intermediary between merchants, users, and payment instruments
   - Standardize the communication flow between a merchant, user-agent, and payment instrument
-  - Easy installation/registration and removal of payment instruments for users
-  - Bring more secure payment methods to the web
+  - Easy installation and removal of payment instruments with User-Agents
+  - Allow payment instruments to bring more secure payment methods to the web
 
 ### Non-goals
 
