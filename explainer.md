@@ -66,7 +66,7 @@ var details = {
 var schemeData = {
     "bobpay.com": {
         merchantIdentifier: "XXXX",
-        bobPaySpecifcField: true
+        bobPaySpecificField: true
     },
     "bitcoin": {
         address: "XXXX"
@@ -84,7 +84,7 @@ pr.addEventListener("error", function(event) {
 });
 ```
 
-The `details` object is general to all payments. Any instrument-specific data is passed in as an optional object.
+The `details` object is general to all payments. Any instrument-specific data is passed in as an optional object (`schemeData` in above example).
 
 The User-Agent presents to the user the intersection of merchant-supported payment instruments and user-installed payment instruments. When the user selects a payment instrument, the User-Agent passes both `details` and instrument-specific data from `schemeData` off to selected intrument.
 
