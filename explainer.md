@@ -48,7 +48,7 @@ An example of 1 would be a digital scheme like Apple Pay. Apple pay returns back
 
 ### Basic Flow
 
-To get started, a merchant creates a payment request. A payment request tells the browser what instruments or schemes are supported by the merchant, the amount of the transaction, and any other necessary scheme-specific information that may be necessary to process the transaction.
+To get started, a merchant creates a payment request. A payment request tells the browser what instruments or schemes are supported by the merchant, the amount of the transaction, and any other necessary scheme-specific information that may be necessary to process the transaction. The standard message passing format between entities is JSON.
 
 ```js
 var supportedInstruments = ["visa", "bitcoin", "bobpay.com"];
