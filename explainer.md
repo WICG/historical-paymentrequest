@@ -190,7 +190,7 @@ This spec assumes some mechanism to securely verify a relationship between a web
 
 User-Agents are free to determine the preferred payment instrument form for a given platform. For example, User-Agents on mobile devices may require that payment instruments be installed as native applications.
 
-Payment instruments should in their manifest file, however, point to an embeddable_url that can communicate via `postMessage` that implements the `paymentRequest` message protocol. This allows all user-agents to support a payment instrument with basic iFrame communication protocols.
+Payment instruments should point to an embeddable_url in their manifest that can communicate via `postMessage` that implements the `paymentRequest` message protocol. This allows all user-agents to support a payment instrument with basic iFrame communication protocols.
 
 > ZK: How hard should we push to standardize something on desktop? Should we standardize that user-agents on desktops should support iFrames and postMessage? Or do we leave it up to the user-agents themselves to decide? I'm afraid if we leave it purely up to User-Agents, we are at risk for telling payment instruments that they have to write three different extensions for three different browsers. Thoughts?
 
