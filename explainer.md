@@ -26,8 +26,6 @@ In addition to better, more consistent user experiences, this also enables websi
 
 ### Payment Request Lifecycle
 
-A [flow diagram](https://github.com/zkoch/paymentrequest/blob/master/flow_diagram.svg) is also available.
-
 1. Merchant requests payment with supported payment instrument(s)
 1. UA presents to user a list of payment instruments supported by merchant and installed by user
 1. User selects payment instrument of choice and, if shipping address is requested, selects or inputs a shipping address. 
@@ -35,6 +33,8 @@ A [flow diagram](https://github.com/zkoch/paymentrequest/blob/master/flow_diagra
 1. Payment instrument returns back relevant data (e.g. credit card number, token, transaction ID) after successful authorization or transaction to UA
 1. UA passes data back to merchant
 1. Merchant independently finalizes and confirms transaction
+
+![paymentRequest Flow Diagram](https://github.com/zkoch/paymentrequest/blob/master/flow_diagram.svg)
 
 A payment instrument can fundamentally take one of two actions: 1.) It can return back data necessary to finalize the transaction (but the transaction remains non-finalized); or 2.) It can complete the transaction and return back proof of the completed transaction.
 
@@ -174,8 +174,8 @@ The overwhelming majority of transactions currently taking place on the web use 
     "details": {
         "cardNumber": "1234123412341234",
         "nameOnCard": "Bob J. Paymentman",
-        "expMonth": 12,
-        "expYear": 2016,
+        "expMonth": "12",
+        "expYear": "2016",
         "cvv2": "123"
     }
 }
