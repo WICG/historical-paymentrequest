@@ -4,6 +4,8 @@
 
 This is a proposal for a new web API that will allow merchants (i.e. websites selling physical or digital goods) to easily accept payments from multiple payment schemes and instruments with minimal integration.
 
+This proposal attempts to align itself with the chartered scope of the proposed Web Payment Interest Group, and the expectation is to offer this document as input to the discussions of that Working Group once it has launched.
+
 ### Why do we care?
 
 Buying things on the web, particularly on mobile, is a frustrating experience for users. Every website has its own flow and its own validation rules, and most require users to manually type in the same set of information over and over again. Likewise, it is difficult and time consuming for developers to create good checkout flows that support various payment schemes.
@@ -27,7 +29,7 @@ In addition to better, more consistent user experiences, this also enables websi
 ### Payment Request Lifecycle
 
 1. Merchant requests payment with supported payment instrument(s)
-1. UA presents to user a list of payment instruments supported by merchant and installed by user
+1. UA presents to user a list of payment instruments accepted by merchant and installed by user
 1. User selects payment instrument of choice and, if shipping address is requested, selects or inputs a shipping address. 
 1. Total transaction amount and other necessary data is passed to payment instrument for further processing.
 1. Payment instrument returns back relevant data (e.g. credit card number, token, transaction ID) after successful authorization or transaction to UA
@@ -42,7 +44,7 @@ An example of 1 would be a digital scheme like Apple Pay. Apple pay returns back
 
 **From a user perspective:**
 
-> Alice has added a few things to her shopping cart and is ready to check out. She clicks the buy button, which causes the website to request payment via the browser paymentRequest API. The website tells the API which payment instruments it supports and the browser asks the user to pick which supported instrument Alice wants to use to pay (e.g. Visa or Bitcoin). If the merchant requests shipping information, Alice also selects a shipping address from locations already stored in the browser or inputs a new one. She submits all of this to the browser which then sends the transaction details (e.g. total amount) to her selected payment instrument. The payment instrument then authorizes or confirms the transaction and passes back details to the UA, which then passes them back to the merchant's website. The website then confirms to Alice that her order has been placed. Sometimes Alice might need to give the website or payment instrument more information in order to complete the process, but in nearly every case this flow will be faster and easier than today's checkout systems.
+> Alice has added a few things to her shopping cart and is ready to check out. She clicks the buy button, which causes the website to request payment via the browser paymentRequest API. The website tells the API which payment instruments it accepts and the browser asks the user to pick which supported instrument Alice wants to use to pay (e.g. Visa or Bitcoin). If the merchant requests shipping information, Alice also selects a shipping address from locations already stored in the browser or inputs a new one. She submits all of this to the browser which then sends the transaction details (e.g. total amount) to her selected payment instrument. The payment instrument then authorizes or confirms the transaction and passes back details to the UA, which then passes them back to the merchant's website. The website then confirms to Alice that her order has been placed. Sometimes Alice might need to give the website or payment instrument more information in order to complete the process, but in nearly every case this flow will be faster and easier than today's checkout systems.
 
 ### Delineation of Roles
 
@@ -54,7 +56,7 @@ An example of 1 would be a digital scheme like Apple Pay. Apple pay returns back
 
 ### Basic Flow
 
-To get started, a merchant creates a payment request. A payment request tells the browser what instruments or schemes are supported by the merchant, the amount of the transaction, and any other necessary scheme-specific information that may be necessary to process the transaction. The standard message passing format between entities is JSON.
+To get started, a merchant creates a payment request. A payment request tells the browser what instruments or schemes are accepted by the merchant, the amount of the transaction, and any other necessary scheme-specific information that may be necessary to process the transaction. The standard message passing format between entities is JSON.
 
 ```js
 var supportedInstruments = ["visa", "bitcoin", "bobpay.com"];
@@ -210,8 +212,6 @@ This spec assumes some mechanism to securely verify a relationship between a web
 ### Web & Native
 
 User-Agents are free to determine the preferred payment instrument form for a given platform. For example, User-Agents on mobile devices may require that payment instruments be installed as native applications.
-
-Payment instruments should point to an embeddable_url in their manifest that can communicate via `postMessage` that implements the `paymentRequest` message protocol. This allows all user-agents to support a payment instrument with basic iFrame communication protocols.
 
 > ZK: How hard should we push to standardize something on desktop? Should we standardize that user-agents on desktops should support iFrames and postMessage? Or do we leave it up to the user-agents themselves to decide? I'm afraid if we leave it purely up to User-Agents, we are at risk for telling payment instruments that they have to write three different extensions for three different browsers. Thoughts?
 
