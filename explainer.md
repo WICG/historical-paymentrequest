@@ -12,7 +12,7 @@ Buying things on the web, particularly on mobile, is a frustrating experience fo
 
 We can fix this by allowing the User-Agent (e.g. browsers) to act as an **intermediary** between the three key parties in every transaction: The Merchant (e.g. an online web store), the Buyer (e.g. the user buying from the online web store), and the Payment Instrument (e.g. credit card, Bitcoin, Apple Pay). Information necessary to process and confirm a transaction is passed between the Payment Instrument and the Merchant via the User-Agent with the Buyer confirming and authing as necessary across the flow.
 
-In addition to better, more consistent user experiences, this also enables websites to take advantage of more secure payment schemes (e.g. tokenization and system-level authentication) that are not possible with standard JavaScript libraries. This reduces liability for the merchant and helps protect sensitive user information.
+In addition to better, more consistent user experiences, this also enables websites to take advantage of more secure payment schemes (e.g. tokenization and system-level authentication) that are not possible with standard JavaScript libraries. This has the potential to reduce liability for the merchant and helps protect sensitive user information.
 
 ### Goals
 
