@@ -101,7 +101,7 @@ promise.then(function(requester) {
 
 The `details` object is general to all payments. Any instrument-specific data is passed in as an optional object (`schemeData` in above example).
 
-The User-Agent presents to the user the intersection of merchant-supported payment instruments and user-installed payment instruments. When the user selects a payment instrument, the User-Agent passes both `details` and instrument-specific data from `schemeData` off to selected intrument.
+The User-Agent presents to the user the intersection of merchant-supported payment instruments and user-installed payment instruments. The User-Agent might offer the option to add a supported payment instrument at this point. When the user selects a payment instrument, the User-Agent passes both `details` and instrument-specific data from `schemeData` off to selected intrument.
 
 Restrictions:
   - Page calling `paymentRequest` must be HTTPS
