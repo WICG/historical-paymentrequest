@@ -4,7 +4,7 @@
 
 This is a proposal for a new web API that will allow merchants (i.e. websites selling physical or digital goods) to easily accept payments from multiple payment schemes and instruments with minimal integration.
 
-This proposal attempts to align itself with the chartered scope of the proposed Web Payment Interest Group, and the expectation is to offer this document as input to the discussions of that Working Group once it has launched.
+This proposal attempts to align itself with the chartered scope of the proposed Web Payment Working Group, and the expectation is to offer this document as input to the discussions of that Working Group once it has launched.
 
 ### Why do we care?
 
