@@ -4,7 +4,7 @@
 
 This is a proposal for a new web API that will allow merchants (i.e. websites selling physical or digital goods) to easily accept payments from multiple payment schemes and instruments with minimal integration.
 
-This proposal attempts to align itself with the chartered scope of the proposed Web Payment Interest Group, and the expectation is to offer this document as input to the discussions of that Working Group once it has launched.
+This proposal attempts to align itself with the chartered scope of the proposed Web Payment Working Group, and the expectation is to offer this document as input to the discussions of that Working Group once it has launched.
 
 ### Why do we care?
 
@@ -12,7 +12,7 @@ Buying things on the web, particularly on mobile, is a frustrating experience fo
 
 We can fix this by allowing the User-Agent (e.g. browsers) to act as an **intermediary** between the three key parties in every transaction: The Merchant (e.g. an online web store), the Buyer (e.g. the user buying from the online web store), and the Payment Instrument (e.g. credit card, Bitcoin, Apple Pay). Information necessary to process and confirm a transaction is passed between the Payment Instrument and the Merchant via the User-Agent with the Buyer confirming and authing as necessary across the flow.
 
-In addition to better, more consistent user experiences, this also enables websites to take advantage of more secure payment schemes (e.g. tokenization and system-level authentication) that are not possible with standard JavaScript libraries. This reduces liability for the merchant and helps protect sensitive user information.
+In addition to better, more consistent user experiences, this also enables websites to take advantage of more secure payment schemes (e.g. tokenization and system-level authentication) that are not possible with standard JavaScript libraries. This has the potential to reduce liability for the merchant and helps protect sensitive user information.
 
 ### Goals
 
@@ -101,7 +101,7 @@ promise.then(function(requester) {
 
 The `details` object is general to all payments. Any instrument-specific data is passed in as an optional object (`schemeData` in above example).
 
-The User-Agent presents to the user the intersection of merchant-supported payment instruments and user-installed payment instruments. When the user selects a payment instrument, the User-Agent passes both `details` and instrument-specific data from `schemeData` off to selected intrument.
+The User-Agent presents to the user the intersection of merchant-supported payment instruments and user-installed payment instruments. The User-Agent might offer the option to add a supported payment instrument at this point. When the user selects a payment instrument, the User-Agent passes both `details` and instrument-specific data from `schemeData` off to selected intrument.
 
 Restrictions:
   - Page calling `paymentRequest` must be HTTPS
