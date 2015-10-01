@@ -166,7 +166,7 @@ requester.addEventListener("shippingAddressChange", function() {
 
 ### Standardizing Common Payment Instruments
 
-The overwhelming majority of transactions currently taking place on the web use a credit or debit card. Since it's possible for multiple payment instruments to return back credit or debit card numbers, we should standardize the `instrumentResponse` object for these transactions. The browser should verify a valid card numbers with the [Luhn check](https://en.wikipedia.org/wiki/Luhn_algorithm).
+The overwhelming majority of transactions currently taking place on the web use a credit or debit card. Since it's possible for multiple payment instruments to return back credit or debit card numbers, we should standardize the `instrumentResponse` object for these transactions. The browser should verify card number validity with the [Luhn check](https://en.wikipedia.org/wiki/Luhn_algorithm).
 
 **Credit or debit card response:**
 
@@ -215,6 +215,8 @@ User-Agents are free to determine the preferred payment instrument form for a gi
 
 > ZK: How hard should we push to standardize something on desktop? Should we standardize that user-agents on desktops should support iFrames and postMessage? Or do we leave it up to the user-agents themselves to decide? I'm afraid if we leave it purely up to User-Agents, we are at risk for telling payment instruments that they have to write three different extensions for three different browsers. Thoughts?
 
+> RB: It seems Ballista is well suited to that. 
+
 ### Nomenclature
 
 "Payment instrument" can be a loaded term, and the line between instrument and scheme, particulary in this document, is a blurry one. For the sake of simplicity, I have referred to any thing the user selects and uses to pay for something as a 'payment instrument'.
@@ -226,6 +228,7 @@ In the future, we may want to better align these terms with the terms defined in
 ### Open Questions
 
   - How can we let merchants know if a payment instrument is available before calling paymentRequest()?
+  - Are we concerned with fingerprinting via availability check?
   - Subscriptions - only select payment instruments with recurring billing
   - Desktop. How? iFrames? How much do we standardize?
   - Do we support general schemes? e.g. ACH that anyone can work with or only Dwolla?
