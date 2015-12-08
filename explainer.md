@@ -36,7 +36,7 @@ In addition to better, more consistent user experiences, this also enables websi
 1. UA passes data back to merchant
 1. Merchant independently finalizes and confirms transaction
 
-![paymentRequest Flow Diagram](https://github.com/zkoch/paymentrequest/blob/master/flow_diagram.png)
+![paymentRequest Flow Diagram](https://github.com/zkoch/paymentrequest/blob/gh-pages/flow_diagram.png)
 
 A payment instrument can fundamentally take one of two actions: 1.) It can return back data necessary to finalize the transaction (but the transaction remains non-finalized); or 2.) It can complete the transaction and return back proof of the completed transaction.
 
