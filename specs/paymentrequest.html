@@ -198,6 +198,8 @@
 [Constructor(sequence&lt;DOMString&gt; supportedMethods, PaymentDetails details, object data)]
 interface PaymentRequest : EventTarget {
   Promise&lt;PaymentResponse&gt; show();
+  void complete(boolean success);
+  void abort();
   readonly attribute ShippingAddress? userAddress;
   void updateShippingOptions(sequence&lt;ShippingOption&gt; options);
 
@@ -333,6 +335,16 @@ interface PaymentRequest : EventTarget {
         get signed as part of the response from a <a>payment method</a>.</p>
       </div>
 
+      <p>The <code><dfn>complete</dfn></code> method must be called after the user has accepted the payment
+      request and the <a><em>acceptPromise</em></a> has been resolved. The <code>complete</code> method
+      takes a boolean argument that indicates the payment was successfully processed if <code>true</code> and
+      that processing failed if <code>false</code>. Calling the <code>complete</code> method tells the user
+      agent that the user interaction is over (and should cause any remaining user interface to be closed).</p>
+
+      <p>The <code><dfn>abort</dfn></code> method may be called if the web page wishes to abort the payment
+      request after the <a><code>show</code></a> method has been called and before the <a><em>acceptPromise</em></a>
+      has been resolved.</p>
+
       <p>The following example shows how to construct a <a><code>PaymentRequest</code></a> and begin the 
       user interaction:</p>
 
@@ -344,6 +356,7 @@ payment.addEventListener("shippingAddressChange", function (changeEvent) {
 
 payment.show().then(function(paymentResponse) {
   // Process paymentResponse
+  payment.complete(true);
 }).catch(function(err) {
   console.error("Uh oh, something bad happened", err.message);
 });
