@@ -120,10 +120,11 @@
         user agent the conduit for messages exchanged between web pages and <a>payment apps</a>.
         The web page supplies a list of payment methods accepted by the merchant. The user agent
         will match those against payment methods supported by the user’s registered payment apps.
-        <div class="issue">
-        To accept a payment method, a merchant must know how to process the response from the
-        Payment Request API. Does this need to be explicitly stated here?
-        </div>
+        </p>
+        <p>
+        One principle of the Payment Request system is that when a merchant web site declares
+        that it accepts a given payment method then it must know how to process the response that
+        gets returned when the user accepts the request.
         </p>
       </section>
 
@@ -177,7 +178,7 @@
         For convenience, we may choose to host a Wiki page that allows developers of payment methods
         to publish links to their documentation including the format of payment request messages.
         The architecture diagram indicates this Wiki.
-        <div class="issue">
+        <div class="issue" data-number="35" title="Should well-known identifiers be used for ubiquitous payment methods">
         If we choose to support well-known short strings for payment methods then we will need to
         determine where to define them. We may choose to define these well-known strings in a
         formal specification.
@@ -213,8 +214,8 @@
         <dd>
         The data describing an instance of a payment method. For example, for the Visa payment
         method this might be the card primary account number (PAN), expiry date, and CVV.
-        <div class="issue">
-        Payment Method Data isn't currently defined in the Web Payments architecture wiki.
+        <div class="ednote">
+        Payment Method Data is unique to this spec and isn't currently defined in the Web Payments architecture wiki.
         </div>
         </dd>
       </dl>

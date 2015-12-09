@@ -297,11 +297,12 @@ payment.show().then(function(paymentResponse) {
           <li>
             If the <a>browsing context</a> of the script calling the constructor is
             not a <a>top-level browsing context</a>, then <a>throw</a> a <a><code>SecurityError</code></a>.
-            <div class="issue" data-number="9" title="Chain of trust between browser and merchant">
-              <p>There is an open issue about <a href="https://github.com/WICG/paymentrequest/issues/9#issuecomment-152369704">requiring
-              a top-level browsing context</a> for using <code>PaymentRequest</code>. Requiring one
+            <div class="issue" data-number="30" title="Should the Payment Request API only be available in a top-level browsing context? ">
+              <p>There is an open issue about requiring
+              a top-level browsing context for using <code>PaymentRequest</code>. Requiring one
               is a mitigation for a user being tricked into thinking a trusted site is asking for
-              payment when in fact an untrusted iframe is asking for payment.</p>
+              payment when in fact an untrusted iframe is asking for payment. The problem is some iframes may
+              have a legitimate reason to request payment.</p>
             </div>
           </li>
           <li>Let <em>request</em> be a new <a><code>PaymentRequest</code></a>.</li>
@@ -368,11 +369,6 @@ payment.show().then(function(paymentResponse) {
             Show a user interface to allow the user to interact with the payment request process.
           </li>
         </ol>
-
-        <div class="issue" data-number="11" title="Let merchant pass in arbitrary data to payment request?">
-          <p>There may be a need to allow merchants to include arbitrary data that might, for example,
-          get signed as part of the response from a <a>payment method</a>.</p>
-        </div>
       </section>
 
       <section>
@@ -423,7 +419,7 @@ payment.show().then(function(paymentResponse) {
           need to define the <code>delegated</code> state, where a user agent has delegated control
           to a software component that cannot be aborted.
         </div>
-        <div class="issue">
+        <div class="issue" data-number="33" title="Should we support a delegated state for PaymentRequest?">
           <p>We believe there are user agent configurations that can cause the UI to get into a state
           where cancellation by the web page during user interaction is difficult. Users should still
           be able to cancel the payment but script will not be able to. We need to investigate in more
@@ -475,7 +471,7 @@ payment.show().then(function(paymentResponse) {
         and sets the <a><code>state</code></a> attribute to <code>accepted</code>.
       </div>
 
-      <div class="issue" data-number="17" title="UI for Payment Instrument">
+      <div class="issue" data-number="32" title="Should the web page be able to provide status information before calling complete()">
       There is an open issue about whether there should be a way for a merchant to keep the user
       informed about the progress of a tranaction after the user approves the payment request.
       </div>
@@ -573,6 +569,9 @@ dictionary PaymentDetails {
       for example by providing a list of acceptable countries or by indicating a restriction in response
       to a <a>shippingaddresschange</a> event.
       </div>
+      <div class="issue" data-number="25" title="Price breakdown">
+        The API should support the ability to provide a set of summary items rather than a single amount.
+      </div>
     </section>
 
     <section>
@@ -592,11 +591,8 @@ interface ShippingAddress {
       <div class="ednote">TODO: The fields of the <a><code>ShippingAddress</code></a> interface are
       yet to be defined.</div>
 
-    <div class="issue" data-number="8" title="Reconsider the need to include shipping in this spec">
-      <p>There is a desire to include support for shipping address in this specification since
-      delivery of physical goods is an important and common scenario. However, there is recognition
-      that stanardising these fields may be time consuming and it might be necessary to postpone
-      adding addresses to a later version.</p>
+    <div class="issue" data-number="28" title="Write-up proposal for shipping address fields">
+      We need to spec the ShippingAddress fields.
     </div>
     <div class="issue" data-number="16" title="Merchant requesting arbitrary data from the UA">
       There is an open question about what data beyond shipping address the merchant might be able
