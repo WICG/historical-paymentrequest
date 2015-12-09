@@ -261,8 +261,7 @@ payment.show().then(function(paymentResponse) {
           user is being asked to complete such as the amount.</p>
           <pre class="example highlight">
 {
-  "amount": 5500, //cents
-  "currencyCode": "USD",
+  "amount": { "currencyCode": "USD", "mantissa": 5500, "exponent": 2 }, // US$55.00
   "requestShipping": true
 }
           </pre>
@@ -473,11 +472,55 @@ payment.show().then(function(paymentResponse) {
     </section>
 
     <section>
+      <h2>CurrencyAmount</h2>
+      <pre class="idl">
+dictionary CurrencyAmount {
+  DOMString currencyCode;
+  long long mantissa;
+  byte exponent;
+};
+      </pre>
+      <p>
+        A <a><code>CurrencyAmount</code></a> dictionary is used to supply monetary amounts in a known
+        currency with known precision. The following fields MUST be supplied for a
+        <a><code>CurrencyAmount</code></a> to be valid:
+      </p>
+      <dl>
+        <dt><code><dfn>currencyCode</dfn></code></dt>
+        <dd>
+          <code>currencyCode</code> is a string code for the currency. For example, USD for US Dollars.
+          <div class="ednote">TODO: reference appropriate standard for currency codes</div>
+        </dd>
+        <dt><code><dfn>mantissa</dfn></code></dt>
+        <dd>
+          <code>mantissa</code> is a signed integer containing the value for the amount of currency.
+          The <code>exponent</code> value is combined with mantissa to reflect the actual value.
+        </dd>
+        <dt><code><dfn>exponent</dfn></code></dt>
+        <dd>
+          <code>exponent</code> is the decimal exponent that, combined with <code>mantissa</code>,
+          will give the value of the amount. It is the number of decimal places of precision included
+          in the <code>mantissa</code>. 
+        </dd>
+      </dl>
+      <div class="ednote">TODO: need to tighten up the language describing <code>mantissa</code> and
+      <code>exponent</code>.</div>
+
+      <p>The following example shows how to represent US$55.00.</p>
+      <pre class="example highlight">
+{
+  "currencyCode": "USD",
+  "mantissa": 5500,
+  "exponent": 2
+}
+      </pre>
+    </section>
+
+    <section>
       <h2>PaymentDetails dictionary</h2>
       <pre class="idl">
 dictionary PaymentDetails {
-  unsigned long long amount;
-  DOMString currencyCode;
+  CurrencyAmount amount;
   boolean requestShipping;
 };
       </pre>
@@ -492,24 +535,7 @@ dictionary PaymentDetails {
       <dl>
         <dt><code><dfn>amount</dfn></code></dt>
         <dd>
-          An <code>unsigned long long</code> containing the monetary amount for the transaction.
-          The units of this value are determined by the <code>currencyCode</code>. For example,
-          they may be <em>cents</em> when the <code>currencyCode</code> is <em>USD</em>.
-
-          <div class="issue" data-number="18" title="Currency Specification">
-            <p>There is an open issue about the type used for the amount. Often this is done with
-            a decimal type but there is no decimal type in JavaScript. Alternatively an additional
-            field for the exponent (e.g. 2 for the <em>cents</em> in <em>USD</em> example) could be
-            provided.</p>
-            <p>Another option is to provide the values as strings. One problem with this is that at
-            some point the system is likely to need to process the values as some kind of number.</p>
-          </div>
-        </dd>
-        <dt><code><dfn>currencyCode</dfn></code></dt>
-        <dd>
-          The currency code for <code>amount</code>.
-          <div class="ednote">TODO: reference appropriate standard for currency codes</div>
-
+          A <a><code>CurrencyAmount</code></a> containing the monetary amount for the transaction.
           <div class="issue" data-number="19" title="Clarity on Currency Conversion">
             There is an open issue about whether there needs to be consideration of differences between
             the currency specified by the merchant for the transaction amount and the currencies that
