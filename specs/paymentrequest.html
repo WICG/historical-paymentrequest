@@ -418,6 +418,21 @@ payment.show().then(function(paymentResponse) {
           <p>The <a><code>state</code></a> attribute follows the following state transitions:</p>
           <img src="state-transitions.svg" width="758" height="234">
         </div>
+        <div class="ednote">
+          TODO: need to add clearer sections to the spec indicating state transitions. In particular
+          need to define the <code>delegated</code> state, where a user agent has delegated control
+          to a software component that cannot be aborted.
+        </div>
+        <div class="issue">
+          <p>We believe there are user agent configurations that can cause the UI to get into a state
+          where cancellation by the web page during user interaction is difficult. Users should still
+          be able to cancel the payment but script will not be able to. We need to investigate in more
+          detail the consequences of this and whether it is really needed.</p>
+          <p>If we specify <code>delegated</code> then it isn't necessary for all user agents to be
+          able to move to this state but it would be necessary for all payment flows that wish to call
+          <a><code>abort</code></a> to account for the situation where this may fail in the <code>delegated</code>
+          state.</p>
+        </div>
       </section>
 
       <section>
