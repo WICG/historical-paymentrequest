@@ -220,13 +220,13 @@ interface PaymentRequest : EventTarget {
       <div class="note">
         <p>The <code>supportedMethods</code> sequence contains the <a>payment method identifiers</a>
         for the <a>payment methods</a> that the merchant web site accepts.</p>
-        <pre class="example">
+        <pre class="example highlight">
           ["visa", "bitcoin", "bobpay.com"]
         </pre>
 
         <p>The <code>details</code> object contains information about the transaction that the
         user is being asked to complete such as the amount.</p>
-        <pre class="example">
+        <pre class="example highlight">
 {
   "amount": 5500, //cents
   "currencyCode": "USD",
@@ -237,7 +237,7 @@ interface PaymentRequest : EventTarget {
         <p>The <code>data</code> object provides optional information that might be needed by the
         supported <a>payment methods</a>. For example, a merchant identifier for provided by a
         particular processor.</p>
-        <pre class="example">
+        <pre class="example highlight">
 {
   "bobpay.com": {
       "merchantIdentifier": "XXXX",
@@ -332,6 +332,22 @@ interface PaymentRequest : EventTarget {
         <p>There may be a need to allow merchants to include arbitrary data that might, for example,
         get signed as part of the response from a <a>payment method</a>.</p>
       </div>
+
+      <p>The following example shows how to construct a <a><code>PaymentRequest</code></a> and begin the 
+      user interaction:</p>
+
+      <pre class="example highlight">
+var payment = new PaymentRequest(supportedInstruments, details, schemeData);
+payment.addEventListener("shippingAddressChange", function (changeEvent) {
+    // Process shipping address change
+});
+
+payment.show().then(function(paymentInstruction) {
+  // Process paymentInstruction
+}).catch(function(err) {
+  console.error("Uh oh, something bad happened", err.message);
+});
+      </pre>
 
       <p>
         <code><dfn>userAddress</dfn></code> is populated when the the user provides a shipping
