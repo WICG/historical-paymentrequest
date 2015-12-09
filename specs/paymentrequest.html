@@ -197,7 +197,7 @@
       <pre class="idl">
 [Constructor(sequence&lt;DOMString&gt; supportedMethods, PaymentDetails details, object data)]
 interface PaymentRequest : EventTarget {
-  Promise&lt;PaymentInstruction&gt; show();
+  Promise&lt;PaymentResponse&gt; show();
   readonly attribute ShippingAddress? userAddress;
   void updateShippingOptions(sequence&lt;ShippingOption&gt; options);
 
@@ -342,8 +342,8 @@ payment.addEventListener("shippingAddressChange", function (changeEvent) {
     // Process shipping address change
 });
 
-payment.show().then(function(paymentInstruction) {
-  // Process paymentInstruction
+payment.show().then(function(paymentResponse) {
+  // Process paymentResponse
 }).catch(function(err) {
   console.error("Uh oh, something bad happened", err.message);
 });
@@ -517,16 +517,16 @@ dictionary ShippingOption {
     </section>
 
     <section>
-      <h2>PaymentInstruction interface</h2>
+      <h2>PaymentResponse interface</h2>
       <pre class="idl">
-interface PaymentInstruction {
+interface PaymentResponse {
   readonly attribute DOMString methodName;
   readonly attribute object details;
 };
       </pre>
 
       <p>
-        A <code>PaymentInstruction</code> is returned when a user has selected a payment method and
+        A <code>PaymentResponse</code> is returned when a user has selected a payment method and
         approved a payment request. It contains the following fields:
       </p>
       <dl>
