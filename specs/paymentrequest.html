@@ -209,27 +209,27 @@
     <section>
       <h2>PaymentRequest interface</h2>
       <pre class="idl">
-enum PaymentRequestState {
-  "created",
-  "interactive",
-  "delegated",
-  "accepted",
-  "closed"
-};
+        enum PaymentRequestState {
+          "created",
+          "interactive",
+          "delegated",
+          "accepted",
+          "closed"
+        };
 
-[Constructor(sequence&lt;DOMString&gt; supportedMethods, PaymentDetails details, object data)]
-interface PaymentRequest : EventTarget {
-  Promise&lt;PaymentResponse&gt; show();
-  void complete(boolean success);
-  void abort();
+        [Constructor(sequence&lt;DOMString&gt; supportedMethods, PaymentDetails details, optional PaymentOptions options, optional object data)]
+        interface PaymentRequest : EventTarget {
+          Promise&lt;PaymentResponse&gt; show();
+          void complete(boolean success);
+          void abort();
 
-  readonly attribute PaymentRequestState state;
+          readonly attribute PaymentRequestState state;
 
-  readonly attribute ShippingAddress? shippingAddress;
+          readonly attribute ShippingAddress? shippingAddress;
 
-  /* Supports "shippingAddressChange" event */
-  attribute EventHandler onshippingaddresschange;
-};
+          /* Supports "shippingAddressChange" event */
+          attribute EventHandler onshippingaddresschange;
+        };
       </pre>
 
       <p>
@@ -243,7 +243,7 @@ interface PaymentRequest : EventTarget {
       user interaction:</p>
 
       <pre class="example highlight">
-var payment = new PaymentRequest(supportedInstruments, details, schemeData);
+var payment = new PaymentRequest(supportedInstruments, details, options, schemeData);
 payment.addEventListener("shippingAddressChange", function (changeEvent) {
     // Process shipping address change
 });
@@ -260,7 +260,8 @@ payment.show().then(function(paymentResponse) {
         <h2>PaymentRequest constructor</h2>
         <p>
           The <a><code>PaymentRequest</code></a> is constructed using the supplied <code>supportedMethods</code>
-          list, the payment <code>details</code>, and any <a>payment method</a> specific <code>data</code>.
+          list, the payment <code>details</code>, the payment <code>options</code>, and any <a>payment
+          method</a> specific <code>data</code>.
         </p>
         <div class="note">
           <p>The <code>supportedMethods</code> sequence contains the <a>payment method identifiers</a>
@@ -289,10 +290,18 @@ payment.show().then(function(paymentResponse) {
                   "label": "Total due",
                   "amount": { "currencyCode": "USD", "mantissa": 6000, "exponent": 2 }, // US$60.00
                 }
-              ],
+              ]
+            }
+          </pre>
+
+          <pre class="example highlight">
+            {
               "requestShipping": true
             }
           </pre>
+
+          <p>The <code>options</code> object contains information about what options the web page
+          wishes to use from the payment request system.</p>
 
           <p><code>data</code> is a <a>JSON object</a> that provides optional information that might
           be needed by the supported <a>payment methods</a>.</p>
@@ -324,7 +333,8 @@ payment.show().then(function(paymentResponse) {
           <li>
             If the <a>browsing context</a> of the script calling the constructor is
             not a <a>top-level browsing context</a>, then <a>throw</a> a <a><code>SecurityError</code></a>.
-            <div class="issue" data-number="30" title="Should the Payment Request API only be available in a top-level browsing context? ">
+            <div class="issue" data-number="30"
+                title="Should the Payment Request API only be available in a top-level browsing context? ">
               <p>There is an open issue about requiring
               a top-level browsing context for using <code>PaymentRequest</code>. Requiring one
               is a mitigation for a user being tricked into thinking a trusted site is asking for
@@ -333,8 +343,18 @@ payment.show().then(function(paymentResponse) {
             </div>
           </li>
           <li>Let <em>request</em> be a new <a><code>PaymentRequest</code></a>.</li>
-          <li>Let <em>supportedMethods</em> be a structured clone of <code>supportedMethods</code>, <em>details</em> be a structured clone of <code>details</code>, and <em>data</em> be a structured clone of <code>data</code>.</li>
-          <li>Store <em>supportedMethods</em>, <em>details</em>, and <em>data</em> in the internal state of <em>request</em>.</li>
+          <li>
+            <p>Let <em>supportedMethods</em> be a structured clone of <code>supportedMethods</code>.</p>
+            <p>Let <em>details</em> be a structured clone of <code>details</code>.</p>
+            <p>If <code>options</code> is provided, then let <em>options</em> be a structured clone
+            of <code>options</code>, else let <em>options</em> be an empty dictionary.</p>
+            <p>If <code>data</code> is provided, then let <em>data</em> be a structured clone
+            of <code>data</code>, else let <em>data</em> be an empty dictionary.</p>
+          </li>
+          <li>
+            Store <em>supportedMethods</em>, <em>details</em>, <em>options</em> and <em>data</em> in the
+            internal state of <em>request</em>.
+          </li>
           <li>Set the value of the <a><code>state</code></a> attribute on <em>request</em> to <code>created</code>.</li>
           <li>
             Set the value of the <a><code>shippingAddress</code></a> attribute on <em>request</em> to <em>null</em>.
@@ -385,8 +405,12 @@ payment.show().then(function(paymentResponse) {
             If the length of <em>acceptedMethods</em> is zero, then reject <em>acceptPromise</em> with a <a><code>NotSupportedError</code></a>.
           </li>
           <li>
-            <em>details</em> MUST contain a value for <code>amount</code> and a value for <code>requestShipping</code>.
-            If these are not all provided, then reject <em>acceptPromise</em> with a <a><code>InvalidAccessError</code></a>.
+            If <em>details</em> does not contain a sequence of <code>items</code> with length greater
+            than one, then reject <em>acceptPromise</em> with a <a><code>InvalidAccessError</code></a>.
+          </li>
+          <li>
+            If <em>options</em> does not contain a value for <code>requestShipping</code> then set
+            the value for <code>requestShipping</code> on <em>options</em> to <code>false</code>.
           </li>
           <li>
             If <em>data</em> is not a JSON object, then reject <em>acceptPromise</em> with an
@@ -528,16 +552,17 @@ dictionary CurrencyAmount {
       <pre class="idl">
 dictionary PaymentDetails {
   sequence&lt;PaymentItem&gt; items;
-  boolean requestShipping;
+  sequence&lt;ShippingOption&gt; shippingOptions;
 };
       </pre>
 
       <p>
-        The <code><dfn>PaymentDetails</dfn></code> dictionary is passed to the <a><code>PaymentRequest</code></a> constructor and provides
-        information about the requested transaction.
+        The <code><dfn>PaymentDetails</dfn></code> dictionary is passed to the <a><code>PaymentRequest</code></a>
+        constructor and provides information about the requested transaction. The <code>PaymentDetails</code>
+        dictionary is also used to update the payment request using <a><code>updatePaymentRequest</code></a>.
       </p>
       <p>
-        The following fields MUST be passed to the <a><code>PaymentRequest</code></a> constructor:
+        The following fields are part of the <code>PaymentDetails</code> dictionary:
       </p>
       <dl>
         <dt><code>items</code></dt>
@@ -548,12 +573,44 @@ dictionary PaymentDetails {
           request. It is the responsibility of the calling code to ensure that the total amount is
           the sum of the preceding items. The <a>user agent</a> MAY not validate that this is true.
         </dd>
+        <dt><code>shippingOptions</code></dt>
+        <dd>
+          A sequence containing the different shipping options that the use may choose from.
+          <p>If the sequence is empty, then this indicates that the merchant
+          cannot ship to the current <a><code>shippingAddress</code></a>.</p>
+          <div class="issue" data-number="2" title="Shipping: should merchant supply supported destinations">
+            <p>We will support shipping restrictions by allowing the web page to call <code>updatePaymentRequest</code>
+            with an empty <code>shippingOptions</code> sequence.</p>
+            <p>We still need to decide how the web page tells the user why they cannot ship to that address.</p>
+          </div>
+        </dd>
+      </dl>
+    </section>
+
+    <section>
+      <h2>PaymentOptions dictionary</h2>
+      <pre class="idl">
+dictionary PaymentOptions {
+  boolean requestShipping;
+};
+      </pre>
+
+      <p>
+        The <code><dfn>PaymentOptions</dfn></code> dictionary is passed to the <a><code>PaymentRequest</code></a>
+        constructor and provides information about the options desired for the payment request.
+      </p>
+      <p>
+        The following fields MAY be passed to the <a><code>PaymentRequest</code></a> constructor:
+      </p>
+      <dl>
         <dt><code><dfn>requestShipping</dfn></code></dt>
         <dd>
           This <em>boolean</em> value indicates whether the <a>user agent</a> should collect and return
           a shipping address as part of the payment request. For example, this would be set to
           <code>true</code> when physical goods need to be shipped by the merchant to the user.
           This would be set to <code>false</code> for an online-only electronic purchase transaction.
+          If this value is not supplied then the the <a><code>PaymentRequest</code></a> behaves as
+          if a value of <code>false</code> had been supplied.
         </dd>
       </dl>
     </section>
@@ -712,46 +769,17 @@ interface PaymentResponse {
         <pre class="idl">
 [Constructor(DOMString type, optional PaymentRequestUpdateEventInit eventInitDict)]
 interface PaymentRequestUpdateEvent : Event {
-  void updatePaymentRequest(PaymentUpdateDetails details);
+  void updatePaymentRequest(PaymentDetails details);
 };
 
 dictionary PaymentRequestUpdateEventInit {
   
 };
-
-dictionary PaymentUpdateDetails {
-  sequence&lt;PaymentItem&gt; items;
-  sequence&lt;ShippingOption&gt; shippingOptions;
-};
         </pre>
-        <div class="issue" title="Need to refactor API to avoid duplication of PaymentDetails and PaymentUpdateDetails">
-        <a><code>PaymentDetails</code></a> and <a><code>PaymentUpdateDetails</code></a> are very similar and
-        should probably be the same. However, there are some parts of <a><code>PaymentDetails</code></a> that
-        can't be updated (i.e. <a><code>requestShipping</code></a>). We need to refactor the API to make
-        this simpler.
-        </div>
         <p>The <a><code>PaymentRequestUpdateEvent</code></a> enables the web page to update
         the details of the payment request in response to a user interaction.</p>
-        <p>The <code><dfn>updatePaymentRequest</dfn></code> method is called with a <a><code>PaymentUpdateDetails</code></a>
+        <p>The <code><dfn>updatePaymentRequest</dfn></code> method is called with a <a><code>PaymentDetails</code></a>
         dictionary containing changed values that the <a>user agent</a> SHOULD present to the user.</p>
-        <p>The following values MAY be included in the <a><code>PaymentUpdateDetails</code></a>
-        dictionary:</p>
-        <dl>
-          <dt><code>items</code></dt>
-          <dd>A new sequence of <a><code>PaymentItem</code></a> dictionaries to update those provided
-          in <a><code>PaymentDetails</code></a>.</dd>
-          <dt><code>shippingOptions</code></dt>
-          <dd>
-            A sequence containing the different shipping options that the use may choose from.
-            <p>If the sequence is empty, then this indicates that the merchant
-            cannot ship to the current <a><code>shippingAddress</code></a>.</p>
-            <div class="issue" data-number="2" title="Shipping: should merchant supply supported destinations">
-              <p>We will support shipping restrictions by allowing the web page to call <code>updatePaymentRequest</code>
-              with an empty <code>shippingOptions</code> sequence.</p>
-              <p>We still need to decide how the web page tells the user why they cannot ship to that address.</p>
-            </div>
-          </dd>
-        </dl>
         <p>The <a><code>updatePaymentRequest</code></a> method MUST act as follows:</p>
         <ol>
           <li>
@@ -778,6 +806,10 @@ dictionary PaymentUpdateDetails {
           </li>
           <li>
             Set the <em>updating</em> flag on <em>target</em> to <em>false</em>.
+          </li>
+          <li>
+            The method should return and the <a>user agent</a> should asynchronously update the
+            user interface based on the changed values in <em>details</em>.
           </li>
         </ol>
 
