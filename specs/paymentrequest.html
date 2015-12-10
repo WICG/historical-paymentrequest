@@ -270,12 +270,28 @@ payment.show().then(function(paymentResponse) {
           </pre>
 
           <p>The <code>details</code> object contains information about the transaction that the
-          user is being asked to complete such as the amount.</p>
+          user is being asked to complete such as the line items in an order.</p>
           <pre class="example highlight">
-{
-  "amount": { "currencyCode": "USD", "mantissa": 5500, "exponent": 2 }, // US$55.00
-  "requestShipping": true
-}
+            {
+              "items": [
+                {
+                  "id": "basket",
+                  "label": "Sub-total",
+                  "amount": { "currencyCode": "USD", "mantissa": 5500, "exponent": 2 }, // US$55.00
+                },
+                {
+                  "id": "tax",
+                  "label": "Sales Tax",
+                  "amount": { "currencyCode": "USD", "mantissa": 500, "exponent": 2 }, // US$5.00
+                },
+                {
+                  "id": "total",
+                  "label": "Total due",
+                  "amount": { "currencyCode": "USD", "mantissa": 6000, "exponent": 2 }, // US$60.00
+                }
+              ],
+              "requestShipping": true
+            }
           </pre>
 
           <p><code>data</code> is a <a>JSON object</a> that provides optional information that might
@@ -511,7 +527,7 @@ dictionary CurrencyAmount {
       <h2>PaymentDetails dictionary</h2>
       <pre class="idl">
 dictionary PaymentDetails {
-  CurrencyAmount amount;
+  sequence&lt;PaymentItem&gt; items;
   boolean requestShipping;
 };
       </pre>
@@ -524,14 +540,13 @@ dictionary PaymentDetails {
         The following fields MUST be passed to the <a><code>PaymentRequest</code></a> constructor:
       </p>
       <dl>
-        <dt><code>amount</code></dt>
+        <dt><code>items</code></dt>
         <dd>
-          A <a><code>CurrencyAmount</code></a> containing the monetary amount for the transaction.
-          <div class="issue" data-number="19" title="Clarity on Currency Conversion">
-            There is an open issue about whether there needs to be consideration of differences between
-            the currency specified by the merchant for the transaction amount and the currencies that
-            the <a>payment method</a> might support.
-          </div>
+          This sequence of <a><code>PaymentItem</code></a> dictionaries indicates what the payment
+          request is for. The sequence must contain at least one <code>PaymentItem</code>. The last
+          <code>PaymentItem</code> in the sequence represents the total amount of the payment
+          request. It is the responsibility of the calling code to ensure that the total amount is
+          the sum of the preceding items. The <a>user agent</a> MAY not validate that this is true.
         </dd>
         <dt><code><dfn>requestShipping</dfn></code></dt>
         <dd>
@@ -541,9 +556,52 @@ dictionary PaymentDetails {
           This would be set to <code>false</code> for an online-only electronic purchase transaction.
         </dd>
       </dl>
-      <div class="issue" data-number="25" title="Price breakdown">
-        The API should support the ability to provide a set of summary items rather than a single amount.
-      </div>
+    </section>
+
+    <section>
+      <h2>PaymentItem dictionary</h2>
+      <pre class="idl">
+        dictionary PaymentItem {
+          string id;
+          string label;
+          CurrencyAmount amount;
+          boolean shipping;
+        };
+      </pre>
+      <p>
+        A sequence of one or more <code>PaymentItem</code> dictionaries is included in the <a><code>PaymentDetails</code></a>
+        dictionary to indicate the what the payment request is for and the value asked for.
+      </p>
+      <p>
+        The following fields MUST be included in a <code>PaymentItem</code> for it to be valid:
+      </p>
+      <dl>
+        <dt><code>id</code></dt>
+        <dd>This is a string identifier used to reference this <code>PaymentItem</code>. It MUST be
+        unique for a given <a><code>PaymentRequest</code></a>.</dd>
+        <dt><code>label</code></dt>
+        <dd>This is a human-readable description of the item. The <a>user agent</a> may display
+        this to the user.</dd>
+        <dt><code>amount</code></dt>
+        <dd>
+          A <a><code>CurrencyAmount</code></a> containing the monetary amount for the item.
+          <div class="issue" data-number="19" title="Clarity on Currency Conversion">
+            There is an open issue about whether there needs to be consideration of differences between
+            the currency specified by the merchant for the transaction amount and the currencies that
+            the <a>payment method</a> might support.
+          </div>
+        </dd>
+      </dl>
+      <p>
+        The following fields are optional and MAY be included in a <code>PaymentItem</code>:
+      </p>
+      <dl>
+        <dt><code>shipping</code></dt>
+        <dd>If the <code>shipping</code> field is included, then it indicates whether this
+        item represents the shipping cost when set to <code>true</code>. The <a>user agent</a>
+        MAY use this value to display the item differently in the user interface, perhaps
+        relating it to the available shipping options.</dd>
+      </dl>
     </section>
 
     <section>
@@ -645,7 +703,7 @@ dictionary PaymentRequestUpdateEventInit {
 };
 
 dictionary PaymentUpdateDetails {
-  CurrencyAmount amount;
+  sequence&lt;PaymentItem&gt; items;
   sequence&lt;ShippingOption&gt; shippingOptions;
 };
         </pre>
@@ -662,8 +720,9 @@ dictionary PaymentUpdateDetails {
         <p>The following values MAY be included in the <a><code>PaymentUpdateDetails</code></a>
         dictionary:</p>
         <dl>
-          <dt><code>amount</code></dt>
-          <dd>The new total amount for the transaction</dd>
+          <dt><code>items</code></dt>
+          <dd>A new sequence of <a><code>PaymentItem</code></a> dictionaries to update those provided
+          in <a><code>PaymentDetails</code></a>.</dd>
           <dt><code>shippingOptions</code></dt>
           <dd>
             A sequence containing the different shipping options that the use may choose from.
@@ -693,8 +752,8 @@ dictionary PaymentUpdateDetails {
             when the <code>state</code> is <code>interactive</code>.
           </li>
           <li>
-            If the <code>details</code> argument contains an <code>amount</code> value, then copy
-            this value to the <code>amount</code> field of the <em>details</em> object on <em>target</em>.
+            If the <code>details</code> argument contains an <code>items</code> value, then copy
+            this value to the <code>items</code> field of the <em>details</em> object on <em>target</em>.
           </li>
           <li>
             If the <code>details</code> argument contains a <code>shippingOptions</code> value, then
