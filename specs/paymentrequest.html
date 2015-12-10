@@ -170,7 +170,13 @@
         <dfn>queue a task</dfn>, <dfn>fire a simple event</dfn>, <dfn>browsing context</dfn>, and
         <dfn>top-level browsing context</dfn> are defined by [[!HTML5]].</dd>
         <dt>ECMA-262 6th Edition, The ECMAScript 2015 Language Specification</dt>
-        <dd>The term <dfn>Promise</dfn> is defined by [[!ECMA-262-2015]].</dd>
+        <dd>
+          The terms <dfn>Promise</dfn>, <dfn>JSON.stringify</dfn>, and <dfn>JSON.parse</dfn> are
+          defined by [[!ECMA-262-2015]].
+          <p>The term <dfn>JSON object</dfn> used in this specification means an object that can
+          be serialised to a string using <a>JSON.stringify</a> and later deserialised back to an object
+          using <a>JSON.parse</a> with no loss of data.</p>
+        </dd>
         <dt>DOM4</dt> 
         <dd><dfn>DOMException</dfn> and the following DOMException types from [[!DOM4]] are used:
         <table>
@@ -266,9 +272,11 @@ payment.show().then(function(paymentResponse) {
 }
           </pre>
 
-          <p>The <code>data</code> object provides optional information that might be needed by the
-          supported <a>payment methods</a>. For example, a merchant identifier for provided by a
-          particular processor.</p>
+          <p><code>data</code> is a <a>JSON object</a> that provides optional information that might
+          be needed by the supported <a>payment methods</a>. The name of each top level field in the
+          object MUST match a <a>payment method identifier</a> string included in <a><code>supportedMethods</code></a>.
+          The value of the field is defined by the <a>payment method</a> and must itself be a <a>JSON object</a>.
+          For example, a merchant identifier for provided by a particular processor.</p>
           <pre class="example highlight">
 {
   "bobpay.com": {
@@ -637,7 +645,7 @@ interface PaymentResponse {
       </dd>
       <dt><code><dfn>details</dfn></code></dt>
       <dd>
-        A JSON object that provides a <a>payment method</a> specific message used by the merchant to
+        A <a>JSON object</a> that provides a <a>payment method</a> specific message used by the merchant to
         process the transaction and determine successful fund transfer.
       </dd>
       </dl>
