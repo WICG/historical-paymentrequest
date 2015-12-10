@@ -607,9 +607,9 @@ dictionary PaymentDetails {
     <section>
       <h2>ShippingAddress interface</h2>
       <pre class="idl">
-interface ShippingAddress {
-  /* [...] fields TBC */
-};
+        interface ShippingAddress {
+          /* [...] fields TBC */
+        };
       </pre>
       <p>
         If the <a>requestShipping</a> flag was set to <code>true</code> in the <a>PaymentDetails</a>
@@ -631,15 +631,32 @@ interface ShippingAddress {
     <section>
       <h2>ShippingOption interface</h2>
       <pre class="idl">
-dictionary ShippingOption {
-  /* [...] fields TBC */
-};
+        dictionary ShippingOption {
+          string id;
+          string label;
+          CurrencyAmount amount;
+        };
       </pre>
       <p>
         The <a>ShippingOption</a> dictionary has fields describing a shipping option. A web page can
-        provide the user with one or more shipping options by calling the <a>updatePaymentRequest</a> method.
-        <div class="ednote">TODO: the fields are TBC but will likely include a name, id, amount, and currencyCode.</div>
+        provide the user with one or more shipping options by calling the <a>updatePaymentRequest</a>
+        method in response to a change event.
       </p>
+      <p>
+        The following fields MUST be included in a <code>PaymentItem</code> for it to be valid:
+      </p>
+      <dl>
+        <dt><code>id</code></dt>
+        <dd>This is a string identifier used to reference this <code>ShippingOption</code>. It MUST be
+        unique for a given <a><code>PaymentRequest</code></a>.</dd>
+        <dt><code>label</code></dt>
+        <dd>This is a human-readable description of the item. The <a>user agent</a> SHOULD use this
+        string to display the shipping option to the user.</dd>
+        <dt><code>amount</code></dt>
+        <dd>
+          A <a><code>CurrencyAmount</code></a> containing the monetary amount for the item.
+        </dd>
+      </dl>
     </section>
 
     <section>
