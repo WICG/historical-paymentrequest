@@ -476,30 +476,26 @@ dictionary CurrencyAmount {
 };
       </pre>
       <p>
-        A <a><code>CurrencyAmount</code></a> dictionary is used to supply monetary amounts in a known
-        currency with known precision. The following fields MUST be supplied for a
-        <a><code>CurrencyAmount</code></a> to be valid:
+        A <a><code>CurrencyAmount</code></a> dictionary is used to supply monetary amounts with known
+        precision using base-10. The value of the amount is <code>mantissa * 10 ^ exponent</code>.
+        The following fields MUST be supplied for a <a><code>CurrencyAmount</code></a> to be valid:
       </p>
       <dl>
         <dt><code><dfn>currencyCode</dfn></code></dt>
         <dd>
-          <code>currencyCode</code> is a string code for the currency. For example, USD for US Dollars.
-          <div class="ednote">TODO: reference appropriate standard for currency codes</div>
+          <code>currencyCode</code> is a string containing a three-letter alphabetic code for the
+          currency as defined by [[!ISO4217]]. For example, <code>"USD"</code> for US Dollars.
         </dd>
         <dt><code><dfn>mantissa</dfn></code></dt>
         <dd>
-          <code>mantissa</code> is a signed integer containing the value for the amount of currency.
-          The <code>exponent</code> value is combined with mantissa to reflect the actual value.
+          The signed mantissa for the decimal amount of currency.
         </dd>
         <dt><code><dfn>exponent</dfn></code></dt>
         <dd>
-          <code>exponent</code> is the decimal exponent that, combined with <code>mantissa</code>,
-          will give the value of the amount. It is the number of decimal places of precision included
-          in the <code>mantissa</code>. 
+          The exponent for the decimal amount of currency.
+          (It is the number of decimal places of precision included in the <code>mantissa</code>).
         </dd>
       </dl>
-      <div class="ednote">TODO: need to tighten up the language describing <code>mantissa</code> and
-      <code>exponent</code>.</div>
 
       <p>The following example shows how to represent US$55.00.</p>
       <pre class="example highlight">
