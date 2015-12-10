@@ -121,6 +121,11 @@
     </section>
     
     <section id='conformance'>
+      <p>
+        As well as sections marked as non-normative, all authoring guidelines, diagrams, examples,
+        and notes in this specification are non-normative. Everything else in this specification is
+        normative.
+      </p>
       <p> 
         This specification defines one class of products: 
       </p> 
@@ -128,7 +133,7 @@
       <dt><dfn>Conforming user agent</dfn></dt> 
       <dd> 
         <p> 
-        A user agent MUST behave as described in this specification 
+        A <dfn data-lt="user agents">user agent</dfn> MUST behave as described in this specification 
         in order to be considered conformant. 
         </p> 
         <p> 
@@ -142,7 +147,7 @@
         <em>conforming implementation</em> of the IDL fragments 
         of this specification, as described in the 
         “Web IDL” specification. [[!WEBIDL]] 
-        </p> 
+        </p>
  
         <aside class="note"> 
         This specification uses both the terms "conforming user agent(s)" 
@@ -167,7 +172,7 @@
         [[!METHODIDENTIFIERS]].</dd>
         <dt>HTML5</dt>
         <dd>The <code><dfn>Navigator</dfn></code> object and the terms <dfn>global object</dfn>,
-        <dfn>queue a task</dfn>, <dfn>fire a simple event</dfn>, <dfn>browsing context</dfn>, and
+        <dfn>queue a task</dfn>, <dfn>browsing context</dfn>, and
         <dfn>top-level browsing context</dfn> are defined by [[!HTML5]].</dd>
         <dt>ECMA-262 6th Edition, The ECMAScript 2015 Language Specification</dt>
         <dd>
@@ -178,7 +183,9 @@
           using <a>JSON.parse</a> with no loss of data.</p>
         </dd>
         <dt>DOM4</dt> 
-        <dd><dfn>DOMException</dfn> and the following DOMException types from [[!DOM4]] are used:
+        <dd>
+        The <code><dfn>Event</dfn></code> type and the term <dfn>fire an event</dfn> are defined by [[!DOM4]].
+        <p><dfn>DOMException</dfn> and the following DOMException types from [[!DOM4]] are used:</p>
         <table>
         <tr><th>Type</th><th>Message (optional)</th></tr>
         <tr><td><code><dfn>InvalidAccessError</dfn></code></td><td>The object does not support the operation or argument</td></tr>
@@ -189,7 +196,7 @@
         </table>
         </dd>
         <dt>WebIDL</dt>
-        <dd>When this specification says to <dfn>throw</dfn> an error, the user agent must throw an
+        <dd>When this specification says to <dfn>throw</dfn> an error, the <a>user agent</a> must throw an
         error as described in [[!WEBIDL]]. When this occurs in a sub-algorithm, this results in
         termination of execution of the sub-algorithm and all ancestor algorithms until one is
         reached that explicitly describes procedures for catching exceptions.</dd>
@@ -218,8 +225,7 @@ interface PaymentRequest : EventTarget {
 
   readonly attribute PaymentRequestState state;
 
-  readonly attribute ShippingAddress? userAddress;
-  void updateShippingOptions(sequence&lt;ShippingOption&gt; options);
+  readonly attribute ShippingAddress? shippingAddress;
 
   /* Supports "shippingAddressChange" event */
   attribute EventHandler onshippingaddresschange;
@@ -230,7 +236,7 @@ interface PaymentRequest : EventTarget {
         A web page creates a <a><code>PaymentRequest</code></a> to make a payment request. This is
         is typically be associated with the user activating a "Buy", "Purchase", or "Checkout" button.
         The <a><code>PaymentRequest</code></a> allows the web page to exchange information with the
-        user agent while the user is providing input before approving or denying a payment request.
+        <a>user agent</a> while the user is providing input before approving or denying a payment request.
       </p>
 
       <p>The following example shows how to construct a <a><code>PaymentRequest</code></a> and begin the 
@@ -273,10 +279,7 @@ payment.show().then(function(paymentResponse) {
           </pre>
 
           <p><code>data</code> is a <a>JSON object</a> that provides optional information that might
-          be needed by the supported <a>payment methods</a>. The name of each top level field in the
-          object MUST match a <a>payment method identifier</a> string included in <a><code>supportedMethods</code></a>.
-          The value of the field is defined by the <a>payment method</a> and must itself be a <a>JSON object</a>.
-          For example, a merchant identifier for provided by a particular processor.</p>
+          be needed by the supported <a>payment methods</a>.</p>
           <pre class="example highlight">
 {
   "bobpay.com": {
@@ -318,13 +321,11 @@ payment.show().then(function(paymentResponse) {
           <li>Store <em>supportedMethods</em>, <em>details</em>, and <em>data</em> in the internal state of <em>request</em>.</li>
           <li>Set the value of the <a><code>state</code></a> attribute on <em>request</em> to <code>created</code>.</li>
           <li>
-            Set the value of the <a><code>userAddress</code></a> attribute on <em>request</em> to <em>null</em>.
+            Set the value of the <a><code>shippingAddress</code></a> attribute on <em>request</em> to <em>null</em>.
           </li>
           <li>
             Set the value of an internal flag on <em>request</em> called <em>updating</em>
             to <em>false</em>.
-            <div class="ednote">TODO: consider whether we want a flag to restrict when
-            <a><code>updateShippingOptions</code></a> can be called.</div>
           </li>
           <li>Return <em>request</em>.</li>
         </ol>
@@ -335,7 +336,7 @@ payment.show().then(function(paymentResponse) {
         <p>
           The <code><dfn>show</dfn></code> method is called when the page wants to begin user interaction for the
           payment request. The <code>show</code> method will return a <a>Promise</a> that will be resolved when the
-          user accepts the payment request. Some kind of user interface will be shown to the user to facilitate the
+          <a>user accepts the payment request</a>. Some kind of user interface will be shown to the user to facilitate the
           payment request after the <code>show</code> method returns.
         </p>
 
@@ -362,16 +363,23 @@ payment.show().then(function(paymentResponse) {
           </li>
           <li>
             Let <em>acceptedMethods</em> be the sequence of payment method identifiers <em>supportedMethods</em>
-            with all identifiers removed that the user agent does not accept.
+            with all identifiers removed that the <a>user agent</a> does not accept.
           </li>
           <li>
             If the length of <em>acceptedMethods</em> is zero, then reject <em>acceptPromise</em> with a <a><code>NotSupportedError</code></a>.
           </li>
           <li>
-            If <em>details</em> or <em>data</em> are invalid, then reject <em>acceptPromise</em> with a <a><code>InvalidAccessError</code></a>.
-            <div class="ednote">
-              TODO: This step needs more explanation about what is valid or invalid.
-            </div>
+            <em>details</em> MUST contain a value for <code>amount</code> and a value for <code>requestShipping</code>.
+            If these are not all provided, then reject <em>acceptPromise</em> with a <a><code>InvalidAccessError</code></a>.
+          </li>
+          <li>
+            If <em>data</em> is not a JSON object, then reject <em>acceptPromise</em> with an
+            <a><code>InvalidAccessError</code></a>.
+          </li>
+          <li>
+            The name of each top level field of <em>data</em> MUST match a <a>payment method identifier</a>
+            in <em>supportedMethods</em>. The value of each top level field MUST be a <a>JSON object</a>.
+            If this is not the case, then reject <em>acceptPromise</em> with an <a><code>InvalidAccessError</code></a>.
           </li>
           <li>
             Show a user interface to allow the user to interact with the payment request process.
@@ -424,15 +432,15 @@ payment.show().then(function(paymentResponse) {
         </div>
         <div class="ednote">
           TODO: need to add clearer sections to the spec indicating state transitions. In particular
-          need to define the <code>delegated</code> state, where a user agent has delegated control
+          need to define the <code>delegated</code> state, where a <a>user agent</a> has delegated control
           to a software component that cannot be aborted.
         </div>
         <div class="issue" data-number="33" title="Should we support a delegated state for PaymentRequest?">
-          <p>We believe there are user agent configurations that can cause the UI to get into a state
+          <p>We believe there are <a>user agent</a> configurations that can cause the UI to get into a state
           where cancellation by the web page during user interaction is difficult. Users should still
           be able to cancel the payment but script will not be able to. We need to investigate in more
           detail the consequences of this and whether it is really needed.</p>
-          <p>If we specify <code>delegated</code> then it isn't necessary for all user agents to be
+          <p>If we specify <code>delegated</code> then it isn't necessary for all <a>user agents</a> to be
           able to move to this state but it would be necessary for all payment flows that wish to call
           <a><code>abort</code></a> to account for the situation where this may fail in the <code>delegated</code>
           state.</p>
@@ -440,44 +448,17 @@ payment.show().then(function(paymentResponse) {
       </section>
 
       <section>
-        <h2>userAddress</h2>
+        <h2>shippingAddress</h2>
         <p>
-          <code><dfn>userAddress</dfn></code> is populated when the the user provides a shipping
+          <code><dfn>shippingAddress</dfn></code> is populated when the the user provides a shipping
           address. It is <em>null</em> by default.
-        </p>
-        <p>
           When a user provides a shipping address, the <a>shipping address changed algorithm</a> runs.
-          A web page will commonly respond to the <a>shippingaddresschange</a> event by calculating
-          the cost of one or more shipping options and calling the <a>updateShippingOptions</a> method.
-          The <code><dfn>updateShippingOptions</dfn></code> method MUST run the following steps:
         </p>
-        <ol>
-          <li>
-            <div class="ednote">TODO: write shipping option steps</div>
-          </li>
-        </ol>
         <p>
           <code><dfn>onshippingaddresschange</dfn></code> is an <code>EventHandler</code> for an
           <code>Event</code> named <code>shippingaddresschange</code>.
         </p>
-        <p>
-          The <dfn>shipping address changed algorithm</dfn> runs when the user provides a shipping
-          address. It MUST run the following steps:
-        </p>
-        <ol>
-          <li>
-            <div class="ednote">TODO: add the shipping address changed steps including
-            <a data-lt="queue a task">queuing a task</a> to <a>fire a simple event</a> named
-            <code><dfn>shippingaddresschange</dfn></code> at the <a><code>PaymentRequest</code></a>
-            object.</div>
-          </li>
-        </ol>
       </section>
-
-      <div class="ednote">
-        TODO: write the user accepts the payment request algorithm that resolves the <a><em>acceptPromise</em></a>
-        and sets the <a><code>state</code></a> attribute to <code>accepted</code>.
-      </div>
 
       <div class="issue" data-number="32" title="Should the web page be able to provide status information before calling complete()">
       There is an open issue about whether there should be a way for a merchant to keep the user
@@ -547,7 +528,7 @@ dictionary PaymentDetails {
         The following fields MUST be passed to the <a><code>PaymentRequest</code></a> constructor:
       </p>
       <dl>
-        <dt><code><dfn>amount</dfn></code></dt>
+        <dt><code>amount</code></dt>
         <dd>
           A <a><code>CurrencyAmount</code></a> containing the monetary amount for the transaction.
           <div class="issue" data-number="19" title="Clarity on Currency Conversion">
@@ -558,25 +539,12 @@ dictionary PaymentDetails {
         </dd>
         <dt><code><dfn>requestShipping</dfn></code></dt>
         <dd>
-          This <em>boolean</em> value indicates whether the user agent should collect and return
+          This <em>boolean</em> value indicates whether the <a>user agent</a> should collect and return
           a shipping address as part of the payment request. For example, this would be set to
           <code>true</code> when physical goods need to be shipped by the merchant to the user.
           This would be set to <code>false</code> for an online-only electronic purchase transaction.
         </dd>
       </dl>
-      <div class="ednote">
-        The [[EXPLAINER]] document proposed a <code>countryCode</code> field, but it is unclear what
-        the purpose of this is.
-      </div>
-      <div class="ednote">
-        The [[EXPLAINER]] document proposed a <code>recurringCharge</code> field, but it is unclear
-        that this is needed for v1 of the spec.
-      </div>
-      <div class="issue" data-number="2" title="Shipping: should merchant supply supported destinations">
-      There is an open issue about whether the API should support indicating shipping restrictions,
-      for example by providing a list of acceptable countries or by indicating a restriction in response
-      to a <a>shippingaddresschange</a> event.
-      </div>
       <div class="issue" data-number="25" title="Price breakdown">
         The API should support the ability to provide a set of summary items rather than a single amount.
       </div>
@@ -589,24 +557,21 @@ interface ShippingAddress {
   /* [...] fields TBC */
 };
       </pre>
-
       <p>
         If the <a>requestShipping</a> flag was set to <code>true</code> in the <a>PaymentDetails</a>
-        passed to the <a>PaymentRequest</a> constructor, then the user agent will populate the
+        passed to the <a>PaymentRequest</a> constructor, then the <a>user agent</a> will populate the
         <code>shippingAddress</code> field of the <a><code>PaymentRequest</code></a> object with
         the user's selected shipping address.
       </p>
-      <div class="ednote">TODO: The fields of the <a><code>ShippingAddress</code></a> interface are
-      yet to be defined.</div>
-
-    <div class="issue" data-number="28" title="Write-up proposal for shipping address fields">
-      We need to spec the ShippingAddress fields.
-    </div>
-    <div class="issue" data-number="16" title="Merchant requesting arbitrary data from the UA">
-      There is an open question about what data beyond shipping address the merchant might be able
-      to request from the user agent. For example, billing address, contact phone number, e-mail
-      address, or proof of age.
-    </div>
+      <div class="issue" data-number="28" title="Write-up proposal for shipping address fields">
+        The fields of the <a><code>ShippingAddress</code></a> interface are
+        yet to be defined.
+      </div>
+      <div class="issue" data-number="16" title="Merchant requesting arbitrary data from the UA">
+        There is an open question about what data beyond shipping address the merchant might be able
+        to request from the <a>user agent</a>. For example, billing address, contact phone number, e-mail
+        address, or proof of age.
+      </div>
     </section>
 
     <section>
@@ -616,11 +581,10 @@ dictionary ShippingOption {
   /* [...] fields TBC */
 };
       </pre>
-
       <p>
         The <a>ShippingOption</a> dictionary has fields describing a shipping option. A web page can
-        provide the user with one or more shipping options by calling the <a>updateShippingOptions</a> method.
-        <div class="ednote">TODO: the fields are TBC but will likely include a name, amount, and currencyCode.</div>
+        provide the user with one or more shipping options by calling the <a>updatePaymentRequest</a> method.
+        <div class="ednote">TODO: the fields are TBC but will likely include a name, id, amount, and currencyCode.</div>
       </p>
     </section>
 
@@ -649,6 +613,156 @@ interface PaymentResponse {
         process the transaction and determine successful fund transfer.
       </dd>
       </dl>
+    </section>
+
+    <section>
+      <h2>Events</h2>
+
+      <section class="informative">
+        <h2>Summary</h2>
+
+        <table>
+          <tr><th>Event name</th><th>Interface</th><th>Dispatched when...</th></tr>
+          <tr>
+            <td><code>shippingaddresschange</code></td>
+            <td><a>PaymentRequestUpdateEvent</a></td>
+            <td>The user provides a new shipping address.</td>
+          </tr>
+          <tr>
+            <td><code>shippingoptionchange</code></td>
+            <td><a>PaymentRequestUpdateEvent</a></td>
+            <td>The user chooses a new shipping option.</td>
+          </tr>
+        </table>
+      </section>
+
+      <section>
+        <h2>PaymentRequestUpdateEvent</h2>
+        <pre class="idl">
+[Constructor(DOMString type, optional PaymentRequestUpdateEventInit eventInitDict)]
+interface PaymentRequestUpdateEvent : Event {
+  void updatePaymentRequest(PaymentUpdateDetails details);
+};
+
+dictionary PaymentRequestUpdateEventInit {
+  
+};
+
+dictionary PaymentUpdateDetails {
+  CurrencyAmount amount;
+  sequence&lt;ShippingOption&gt; shippingOptions;
+};
+        </pre>
+        <div class="issue" title="Need to refactor API to avoid duplication of PaymentDetails and PaymentUpdateDetails">
+        <a><code>PaymentDetails</code></a> and <a><code>PaymentUpdateDetails</code></a> are very similar and
+        should probably be the same. However, there are some parts of <a><code>PaymentDetails</code></a> that
+        can't be updated (i.e. <a><code>requestShipping</code></a>). We need to refactor the API to make
+        this simpler.
+        </div>
+        <p>The <a><code>PaymentRequestUpdateEvent</code></a> enables the web page to update
+        the details of the payment request in response to a user interaction.</p>
+        <p>The <code><dfn>updatePaymentRequest</dfn></code> method is called with a <a><code>PaymentUpdateDetails</code></a>
+        dictionary containing changed values that the <a>user agent</a> SHOULD present to the user.</p>
+        <p>The following values MAY be included in the <a><code>PaymentUpdateDetails</code></a>
+        dictionary:</p>
+        <dl>
+          <dt><code>amount</code></dt>
+          <dd>The new total amount for the transaction</dd>
+          <dt><code>shippingOptions</code></dt>
+          <dd>
+            A sequence containing the different shipping options that the use may choose from.
+            <p>If the sequence is empty, then this indicates that the merchant
+            cannot ship to the current <a><code>shippingAddress</code></a>.</p>
+            <div class="issue" data-number="2" title="Shipping: should merchant supply supported destinations">
+              <p>We will support shipping restrictions by allowing the web page to call <code>updatePaymentRequest</code>
+              with an empty <code>shippingOptions</code> sequence.</p>
+              <p>We still need to decide how the web page tells the user why they cannot ship to that address.</p>
+            </div>
+          </dd>
+        </dl>
+        <p>The <a><code>updatePaymentRequest</code></a> method MUST act as follows:</p>
+        <ol>
+          <li>
+            Let <em>target</em> be the <a><code>PaymentRequest</code></a> object that is the target of
+            the event.
+          </li>
+          <li>
+            If the <em>updating</em> flag on <em>target</em> is <em>false</em>, then <a>throw</a>
+            an <a><code>InvalidStateError</code></a>.
+          </li>
+          <li>
+            If the <a><code>state</code></a> of <em>target</em> is not <code>interactive</code>,
+            then <a>throw</a> an <a><code>InvalidStateError</code></a>. Note: it should not be
+            possible for this to occur since <em>updating</em> should only ever be <em>true</em>
+            when the <code>state</code> is <code>interactive</code>.
+          </li>
+          <li>
+            If the <code>details</code> argument contains an <code>amount</code> value, then copy
+            this value to the <code>amount</code> field of the <em>details</em> object on <em>target</em>.
+          </li>
+          <li>
+            If the <code>details</code> argument contains a <code>shippingOptions</code> value, then
+            copy this value to the <em>shippingOptions</em> of the <em>target</em>.
+          </li>
+          <li>
+            Set the <em>updating</em> flag on <em>target</em> to <em>false</em>.
+          </li>
+        </ol>
+
+      </section>
+    </section>
+
+    <section>
+      <h2>Algorithms</h2>
+
+      <section>
+        <h2>Shipping address changed algorithm</h2>
+        <p>
+          The <dfn>shipping address changed algorithm</dfn> runs when the user provides a new shipping
+          address. It MUST run the following steps:
+        </p>
+        <ol>
+          <li>
+            <div class="ednote">TODO: add the shipping address changed steps including
+            <a data-lt="queue a task">queuing a task</a> to <a>fire an event</a> named
+            <code><dfn>shippingaddresschange</dfn></code> at the <a><code>PaymentRequest</code></a>
+            object.</div>
+          </li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>Shipping option changed algorithm</h2>
+        <p>
+          The <dfn>shipping option changed algorithm</dfn> runs when the user chooses a new shipping
+          option. It MUST run the following steps:
+        </p>
+        <ol>
+          <li>
+            <div class="ednote">TODO: add the shipping option changed steps including
+            <a data-lt="queue a task">queuing a task</a> to <a>fire an event</a> named
+            <code><dfn>shippingoptionchange</dfn></code> at the <a><code>PaymentRequest</code></a>
+            object.</div>
+          </li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>User accepts the payment request algorithm</h2>
+        <p>
+          The <dfn data-lt="user accepts the payment request">user accepts the payment request
+          algorithm</dfn> runs when the user accepts the payment request and confirms that they want
+          to pay. It MUST run the following steps:
+        </p>
+        <ol>
+          <li>
+            <div class="ednote">
+              TODO: write the user accepts the payment request algorithm that resolves the <a><em>acceptPromise</em></a>
+              and sets the <a><code>state</code></a> attribute to <code>accepted</code>.
+            </div>
+          </li>
+        </ol>
+      </section>
     </section>
 
   </body>
