@@ -1,5 +1,10 @@
 # Better Web Payments
 
+> Note: this explainer document, which motivated the design of the API,
+> is slowly drifting out of sync with the proposed [specifications](http://wicg.github.io/paymentrequest/).
+> If there is a difference between the two, you should consider the
+> specifications to be authoritative.
+
 ### What is this?
 
 This is a proposal for a new web API that will allow merchants (i.e. websites selling physical or digital goods) to easily accept payments from multiple payment schemes and instruments with minimal integration.
