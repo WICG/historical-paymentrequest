@@ -171,7 +171,7 @@
         Method Identifier</dfn> is defined by the Payment Method Identifiers specification
         [[!METHODIDENTIFIERS]].</dd>
         <dt>HTML5</dt>
-        <dd>The <code><dfn>Navigator</dfn></code> object and the terms <dfn>global object</dfn>,
+        <dd>The terms <dfn>global object</dfn>,
         <dfn>queue a task</dfn>, <dfn>browsing context</dfn>, and
         <dfn>top-level browsing context</dfn> are defined by [[!HTML5]].</dd>
         <dt>ECMA-262 6th Edition, The ECMAScript 2015 Language Specification</dt>
@@ -226,9 +226,13 @@
           readonly attribute PaymentRequestState state;
 
           readonly attribute ShippingAddress? shippingAddress;
+          readonly attribute DOMString? shippingOption;
 
-          /* Supports "shippingAddressChange" event */
+          /* Supports "shippingaddresschange" event */
           attribute EventHandler onshippingaddresschange;
+
+          /* Supports "shippingoptionchange" event */
+          attribute EventHandler onshippingoptionchange;
         };
       </pre>
 
@@ -360,6 +364,9 @@ payment.show().then(function(paymentResponse) {
             Set the value of the <a><code>shippingAddress</code></a> attribute on <em>request</em> to <em>null</em>.
           </li>
           <li>
+            Set the value of the <a><code>shippingOption</code></a> attribute on <em>request</em> to <em>null</em>.
+          </li>
+          <li>
             Set the value of an internal flag on <em>request</em> called <em>updating</em>
             to <em>false</em>.
           </li>
@@ -470,21 +477,6 @@ payment.show().then(function(paymentResponse) {
           <p>The <a><code>state</code></a> attribute follows the following state transitions:</p>
           <img src="state-transitions.svg" width="758" height="235">
         </div>
-        <div class="ednote">
-          TODO: need to add clearer sections to the spec indicating state transitions. In particular
-          need to define the <code>delegated</code> state, where a <a>user agent</a> has delegated control
-          to a software component that cannot be aborted.
-        </div>
-        <div class="issue" data-number="33" title="Should we support a delegated state for PaymentRequest?">
-          <p>We believe there are <a>user agent</a> configurations that can cause the UI to get into a state
-          where cancellation by the web page during user interaction is difficult. Users should still
-          be able to cancel the payment but script will not be able to. We need to investigate in more
-          detail the consequences of this and whether it is really needed.</p>
-          <p>If we specify <code>delegated</code> then it isn't necessary for all <a>user agents</a> to be
-          able to move to this state but it would be necessary for all payment flows that wish to call
-          <a><code>abort</code></a> to account for the situation where this may fail in the <code>delegated</code>
-          state.</p>
-        </div>
       </section>
 
       <section>
@@ -497,6 +489,19 @@ payment.show().then(function(paymentResponse) {
         <p>
           <code><dfn>onshippingaddresschange</dfn></code> is an <code>EventHandler</code> for an
           <code>Event</code> named <code>shippingaddresschange</code>.
+        </p>
+      </section>
+
+      <section>
+        <h2>shippingOption</h2>
+        <p>
+          <code><dfn>shippingOption</dfn></code> is populated when the the user chooses a shipping
+          option. It is <em>null</em> by default.
+          When a user chooses a shipping option, the <a>shipping option changed algorithm</a> runs.
+        </p>
+        <p>
+          <code><dfn>onshippingoptionchange</dfn></code> is an <code>EventHandler</code> for an
+          <code>Event</code> named <code>shippingoptionchange</code>.
         </p>
       </section>
 
@@ -772,8 +777,7 @@ interface PaymentRequestUpdateEvent : Event {
   void updatePaymentRequest(PaymentDetails details);
 };
 
-dictionary PaymentRequestUpdateEventInit {
-  
+dictionary PaymentRequestUpdateEventInit : EventInit {
 };
         </pre>
         <p>The <a><code>PaymentRequestUpdateEvent</code></a> enables the web page to update
@@ -819,6 +823,9 @@ dictionary PaymentRequestUpdateEventInit {
     <section>
       <h2>Algorithms</h2>
 
+      <p>When the <a><code>PaymentRequest</code></a> object is in the <code>interactive</code> state,
+      the <a>user agent</a> will trigger the following algorithms based on user interaction.</p>
+
       <section>
         <h2>Shipping address changed algorithm</h2>
         <p>
@@ -826,11 +833,15 @@ dictionary PaymentRequestUpdateEventInit {
           address. It MUST run the following steps:
         </p>
         <ol>
+          <li>Let <em>request</em> be the <a><code>PaymentRequest</code></a> object that the user is
+          interacting with.</li>
+          <li>Let <em>name</em> be <code><dfn>shippingaddresschange</dfn></code>.</li>
           <li>
-            <div class="ednote">TODO: add the shipping address changed steps including
-            <a data-lt="queue a task">queuing a task</a> to <a>fire an event</a> named
-            <code><dfn>shippingaddresschange</dfn></code> at the <a><code>PaymentRequest</code></a>
-            object.</div>
+            Set the <a><code>shippingAddress</code></a> attribute on <em>request</em> to the
+            shipping address provided by the user.
+          </li>
+          <li>
+            Run the <a>PaymentRequest updated algorithm</a> with <em>request</em> and <em>name</em>.
           </li>
         </ol>
       </section>
@@ -842,13 +853,105 @@ dictionary PaymentRequestUpdateEventInit {
           option. It MUST run the following steps:
         </p>
         <ol>
+          <li>Let <em>request</em> be the <a><code>PaymentRequest</code></a> object that the user is
+          interacting with.</li>
+          <li>Let <em>name</em> be <code><dfn>shippingoptionchange</dfn></code>.</li>
           <li>
-            <div class="ednote">TODO: add the shipping option changed steps including
-            <a data-lt="queue a task">queuing a task</a> to <a>fire an event</a> named
-            <code><dfn>shippingoptionchange</dfn></code> at the <a><code>PaymentRequest</code></a>
-            object.</div>
+            Set the <a><code>shippingOption</code></a> attribute on <em>request</em> to the
+            <code>id</code> string of the <a><code>ShippingOption</code></a> provided by the user.
+          </li>
+          <li>
+            Run the <a>PaymentRequest updated algorithm</a> with <em>request</em> and <em>name</em>.
           </li>
         </ol>
+      </section>
+
+      <section>
+        <h2>PaymentRequest updated algorithm</h2>
+        <p>
+          The <dfn>PaymentRequest updated algorithm</dfn> is run by other algorithms above to fire
+          an event to indicate that a user has made a change to a <a><code>PaymentRequest</code></a>
+          called <em>request</em> with an event name of <em>name</em>.</p>
+        <p>It MUST run the following steps:</p> 
+        <ol>
+          <li>
+            If the <em>updating</em> flag on <em>request</em> is <em>true</em>, then terminate
+            this algorithm and take no further action. Only one update may take place at a time. This
+            should never occur.
+          </li>
+          <li>
+            If the <a><code>state</code></a> of <em>request</em> is not set to <code>interactive</code>,
+            then terminate this algorithm and take no further action. The <a>user agent</a> user interface
+            should ensure that this never occurs.
+          </li>
+          <li>Let <em>event</em> be a new <a><code>PaymentRequestUpdateEvent</code></a>.</li>
+          <li>Set the <em>updating</em> flag on <em>request</em> to <em>true</em>.</li>
+          <li>
+            The <a>user agent</a> SHOULD disable the user interface that allows the user to accept
+            the payment request. This is to ensure that they payment is not accepted until the web page
+            has made changes required by the change. The web page MUST call <a><code>updatePaymentRequest</code></a>
+            (even with no changes) to indicate that the payment request is valid again.
+            <p>The <a>user agent</a> SHOULD disable any part of the user interface that could cause
+            another update event to be fired. Only one update may be processed at a time.</p>
+            <div class="issue" title="Consider adding a timeout to the updating flag in case page doesn't call updatePaymentRequest">
+              We should add a timeout mechanism that sets <em>updating</em> to <em>false</em> if the
+              page doesn't call <a><code>updatePaymentRequest</code></a> within a reasonable time.
+            </div>
+          </li>
+          <li>
+            <a>Queue a task</a> to <a>fire an event</a> named <em>name</em> of type <em>event</em>
+            at <em>request</em>.
+          </li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>User agent delegates payment request algorithm</h2>
+
+        <p>
+          The <a><code>PaymentRequest</code></a> interface allows a web page to call <code>abort</code>
+          to tell the <a>user agent</a> to abort the payment request and to tear down any user interface that
+          might be shown. For example, a web page may choose to do this the goods they are selling are
+          only available for a limited amount of time. If the user does not accept the payment request
+          within the allowed time period then the request will be aborted.
+        </p>
+        <p>
+          A <a>user agent</a> may not always be able to abort a request. For example, if the <a>user agent</a>
+          has delegated responsibility for the request to another app. To support this situation,
+          the <a>user agent</a> must run the <dfn>User agent delegates payment request algorithm</dfn>.
+          The algorithm MUST run the following steps:
+        </p>
+
+        <ol>
+          <li>
+            Let <em>request</em> be the <a><code>PaymentRequest</code></a> object that the user is
+            interacting with.
+          </li>
+          <li>
+            If the <em>updating</em> flag on <em>request</em> is <em>true</em>, then terminate this
+            algorithm and take no further action. The <a>user agent</a> user interface should ensure
+            that this never occurs.
+          </li>
+          <li>
+            If the <a><code>state</code></a> of <em>request</em> is not <code>interactive</code>,
+            then terminate this algorithm and take no further action. The <a>user agent</a> user
+            interface should ensure that this never occurs.
+          </li>
+          <li>
+            Set the <a><code>state</code></a> of <em>request</em> to <code>delegated</code>.
+          </li>
+        </ol>
+
+        <div class="issue" data-number="33" title="Should we support a delegated state for PaymentRequest?">
+          <p>We believe there are <a>user agent</a> configurations that can cause the UI to get into a state
+          where cancellation by the web page during user interaction is difficult. Users should still
+          be able to cancel the payment but script will not be able to. We need to investigate in more
+          detail the consequences of this and whether it is really needed.</p>
+          <p>If we specify <code>delegated</code> then it isn't necessary for all <a>user agents</a> to be
+          able to move to this state but it would be necessary for all payment flows that wish to call
+          <a><code>abort</code></a> to account for the situation where this may fail in the <code>delegated</code>
+          state.</p>
+        </div>
       </section>
 
       <section>
@@ -860,10 +963,44 @@ dictionary PaymentRequestUpdateEventInit {
         </p>
         <ol>
           <li>
-            <div class="ednote">
-              TODO: write the user accepts the payment request algorithm that resolves the <a><em>acceptPromise</em></a>
-              and sets the <a><code>state</code></a> attribute to <code>accepted</code>.
-            </div>
+            Let <em>request</em> be the <a><code>PaymentRequest</code></a> object that the user is
+            interacting with.
+          </li>
+          <li>
+            If the <em>updating</em> flag on <em>request</em> is <em>true</em>, then terminate this
+            algorithm and take no further action. The <a>user agent</a> user interface should ensure
+            that this never occurs.
+          </li>
+          <li>
+            If the <a><code>state</code></a> of <em>request</em> is not <code>interactive</code> and
+            the not <code>delegated</code>, then terminate this algorithm and take no further action.
+            The <a>user agent</a> user interface should ensure that this never occurs.
+          </li>
+          <li>
+            If the <code>requestShipping</code> value of <em>options</em> stored in <em>request</em>
+            is <code>true</code>, then if the <code>shippingAddress</code> attribute of <em>request</em>
+            is <code>null</code> or if the <code>shippingOption</code> attribute of <em>request</em>
+            is <code>null</code>, then terminate this algorithm and take no further action. This should
+            never occur.
+          </li>
+          <li>
+            Let <em>response</em> be a new <a><code>PaymentResponse</code></a>.
+          </li>
+          <li>
+            Set the <code>methodName</code> attribute value of <em>response</em> to the <a>payment method identifier</a>
+            for the <a>payment method</a> that the user selected to accept the payment.
+          </li>
+          <li>
+            Set the <code>details</code> attribute value of <em>response</em> to a <a>JSON object</a>
+            containing the <a>payment method</a> specific message used by the merchant to process
+            the transaction.
+          </li>
+          <li>
+            Set the <a><code>state</code></a> of <em>request</em> to <code>accepted</code>.
+          </li>
+          <li>
+            Resolve the pending <a><em>acceptPromise</em></a> for the <em>request</em> that was returned
+            by the <a><code>show</code></a> method call that started the payment request.
           </li>
         </ol>
       </section>
