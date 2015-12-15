@@ -180,7 +180,7 @@
           The terms <dfn>Promise</dfn>, <dfn>JSON.stringify</dfn>, and <dfn>JSON.parse</dfn> are
           defined by [[!ECMA-262-2015]].
           <p>The term <dfn>JSON object</dfn> used in this specification means an object that can
-          be serialised to a string using <a>JSON.stringify</a> and later deserialised back to an object
+          be serialized to a string using <a>JSON.stringify</a> and later deserialized back to an object
           using <a>JSON.parse</a> with no loss of data.</p>
         </dd>
         <dt>DOM4</dt> 
@@ -239,7 +239,7 @@
 
       <p>
         A web page creates a <a><code>PaymentRequest</code></a> to make a payment request. This is
-        is typically be associated with the user activating a "Buy", "Purchase", or "Checkout" button.
+        typically associated with the user activating a "Buy", "Purchase", or "Checkout" button.
         The <a><code>PaymentRequest</code></a> allows the web page to exchange information with the
         <a>user agent</a> while the user is providing input before approving or denying a payment request.
       </p>
@@ -483,7 +483,7 @@ payment.show().then(function(paymentResponse) {
       <section>
         <h2>shippingAddress</h2>
         <p>
-          <code><dfn>shippingAddress</dfn></code> is populated when the the user provides a shipping
+          <code><dfn>shippingAddress</dfn></code> is populated when the user provides a shipping
           address. It is <em>null</em> by default.
           When a user provides a shipping address, the <a>shipping address changed algorithm</a> runs.
         </p>
@@ -496,7 +496,7 @@ payment.show().then(function(paymentResponse) {
       <section>
         <h2>shippingOption</h2>
         <p>
-          <code><dfn>shippingOption</dfn></code> is populated when the the user chooses a shipping
+          <code><dfn>shippingOption</dfn></code> is populated when the user chooses a shipping
           option. It is <em>null</em> by default.
           When a user chooses a shipping option, the <a>shipping option changed algorithm</a> runs.
         </p>
@@ -914,7 +914,7 @@ dictionary PaymentRequestUpdateEventInit : EventInit {
           to tell the <a>user agent</a> to abort the payment request and to tear down any user interface that
           might be shown. For example, a web page may choose to do this the goods they are selling are
           only available for a limited amount of time. If the user does not accept the payment request
-          within the allowed time period then the request will be aborted.
+          within the allowed time period, then the request will be aborted.
         </p>
         <p>
           A <a>user agent</a> may not always be able to abort a request. For example, if the <a>user agent</a>
