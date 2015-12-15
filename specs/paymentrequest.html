@@ -38,14 +38,6 @@
                       "Adrian Bateman"
                   ]
               ,   status:   "CG-DRAFT"
-              },
-              "EXPLAINER": {
-                  title:    "Better Web Payments"
-              ,   href:     "https://github.com/WICG/paymentrequest/blob/gh-pages/explainer.md"
-              ,   authors:  [
-                      "Zach Koch"
-                  ]
-              ,   status:   "unofficial"
               }
           }
       };
@@ -62,42 +54,51 @@
   <body>
     <section id='abstract'>
       <p>
-        This is a proposal for a new web API that will allow merchants (i.e. websites selling
-        physical or digital goods) to easily accept payments from multiple payment methods with
-        minimal integration.
+        This specification describes a web API to allow merchants (i.e. web sites selling
+        physical or digital goods) to easily accept payments from different payment methods with
+        minimal integration. User agents (e.g. browsers) will facilitate the payment flow between
+        merchant and user.
       </p>
     </section>
 
     <section id='sotd'>
       <p>
-        This is very rought draft intended to begin discussion based on Zach Koch's explainer
-        document [[EXPLAINER]]. This proposal attempts to align itself with the chartered scope
-        of the <a href="http://www.w3.org/Payments/WG/">Web Payment Working Group</a>.
+        The Web Platform Incubator Community Group is incubating this specification to gather
+        feedback to refine the API. The specification is intended to align with the chartered scope
+        of the <a href="http://www.w3.org/Payments/WG/">Web Payments Working Group</a> and it is
+        possible that work on the API may be transferred to that group in future.
+      </p>
+      <p>
+        If you wish to make comments regarding this document, please contribute to the
+        <a href="https://github.com/WICG/paymentrequest/issues">issues list</a> in the
+        <a href="https://github.com/WICG/paymentrequest">GitHub repo</a>. Pull requests with
+        proposed text changes are welcome, but please note that you will be asked to join the Web
+        Platform Incubator Community Group and agree to the CLA for any substantive proposals.
       </p>
     </section>
     
     <section class='informative'>
       <h2>Introduction</h2>
         <p>Buying things on the
-        web, particularly on mobile, is a frustrating experience for users. Every website has its own flow
+        web, particularly on mobile, is a frustrating experience for users. Every web site has its own flow
         and its own validation rules, and most require users to manually type in the same set of information
         over and over again. Likewise, it is difficult and time consuming for developers to create good
         checkout flows that support various payment schemes.</p>
 
-        <p>We can fix this by allowing the User-Agent (e.g. browsers) to act as an intermediary between
-        the three key parties in every transaction: The Merchant (e.g. an online web store), the
-        Buyer (e.g. the user buying from the online web store), and the <a>Payment Method</a> (e.g.
-        credit card, Bitcoin, Apple Pay). Information necessary to process and confirm a transaction
-        is passed between the Payment Method and the Merchant via the User-Agent with the Buyer
-        confirming and authing as necessary across the flow.</p>
+        <p>This specification describes an API that allows <a>user agents</a> (e.g. browsers) to act
+        as an intermediary between the three key parties in every transaction: the merchant (e.g. an
+        online web store), the buyer (e.g. the user buying from the online web store), and the
+        <a>Payment Method</a> (e.g. credit card). Information necessary to process and confirm a
+        transaction is passed between the <a>Payment Method</a> and the merchant via the <a>user agent</a>
+        with the buyer confirming and authorizing as necessary across the flow.</p>
 
         <p>In addition to better, more consistent user experiences, this also enables web sites to take
         advantage of more secure payment schemes (e.g. tokenization and system-level authentication)
         that are not possible with standard JavaScript libraries. This has the potential to reduce
         liability for the merchant and helps protect sensitive user information.</p>
 
-        <p>This document describes an API for User Agents that forms part of the Payment Request
-        system described in the Payment Request Architecture [[PAYMENTARCH]].</p>
+        <p>The API described in this document forms part of the Payment Request system described in
+        the Payment Request Architecture [[PAYMENTARCH]] document.</p>
 
       <section id="goals">
         <h2>Goals</h2>
