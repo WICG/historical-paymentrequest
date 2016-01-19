@@ -283,17 +283,17 @@ payment.show().then(function(paymentResponse) {
                 {
                   "id": "basket",
                   "label": "Sub-total",
-                  "amount": { "currencyCode": "USD", "mantissa": 5500, "exponent": 2 }, // US$55.00
+                  "amount": { "currencyCode": "USD", "value" : "55.00" }, // US$55.00
                 },
                 {
                   "id": "tax",
                   "label": "Sales Tax",
-                  "amount": { "currencyCode": "USD", "mantissa": 500, "exponent": 2 }, // US$5.00
+                  "amount": { "currencyCode": "USD", "value" : "5.00" }, // US$5.00
                 },
                 {
                   "id": "total",
                   "label": "Total due",
-                  "amount": { "currencyCode": "USD", "mantissa": 6000, "exponent": 2 }, // US$60.00
+                  "amount": { "currencyCode": "USD", "value" : "60.00" }, // US$60.00
                 }
               ]
             }
@@ -516,13 +516,11 @@ payment.show().then(function(paymentResponse) {
       <pre class="idl">
 dictionary CurrencyAmount {
   DOMString currencyCode;
-  long long mantissa;
-  byte exponent;
+  DOMString value;
 };
       </pre>
       <p>
-        A <a><code>CurrencyAmount</code></a> dictionary is used to supply monetary amounts with known
-        precision using base-10. The value of the amount is <code>mantissa * 10 ^ exponent</code>.
+        A <a><code>CurrencyAmount</code></a> dictionary is used to supply monetary amounts.
         The following fields MUST be supplied for a <a><code>CurrencyAmount</code></a> to be valid:
       </p>
       <dl>
@@ -531,14 +529,15 @@ dictionary CurrencyAmount {
           <code>currencyCode</code> is a string containing a three-letter alphabetic code for the
           currency as defined by [[!ISO4217]]. For example, <code>"USD"</code> for US Dollars.
         </dd>
-        <dt><code><dfn>mantissa</dfn></code></dt>
+        <dt><code><dfn>value</dfn></code></dt>
         <dd>
-          The signed mantissa for the decimal amount of currency.
-        </dd>
-        <dt><code><dfn>exponent</dfn></code></dt>
-        <dd>
-          The exponent for the decimal amount of currency.
-          (It is the number of decimal places of precision included in the <code>mantissa</code>).
+          A string containing the decimal monetary value. The string MUST use a single U+002E FULL
+          STOP character as the decimal separator. The string MUST begin with a sing U+002D HYPHEN-MINUS
+          character if the value is negative. All other characters must be characters in the range
+          U+0030 DIGIT ZERO (0) to U+0039 DIGIT NINE (9).
+          <div class="note">
+            The string should match the regular expression <code>^-?[0-9]+(\.[0-9]+)?$</code>.
+          </div>
         </dd>
       </dl>
 
@@ -546,8 +545,7 @@ dictionary CurrencyAmount {
       <pre class="example highlight">
 {
   "currencyCode": "USD",
-  "mantissa": 5500,
-  "exponent": 2
+  "value" : "55.00"
 }
       </pre>
     </section>
