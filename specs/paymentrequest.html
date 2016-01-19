@@ -248,7 +248,7 @@
       user interaction:</p>
 
       <pre class="example highlight">
-var payment = new PaymentRequest(supportedInstruments, details, options, schemeData);
+var payment = new PaymentRequest(supportedMethods, details, options, data);
 payment.addEventListener("shippingAddressChange", function (changeEvent) {
     // Process shipping address change
 });
