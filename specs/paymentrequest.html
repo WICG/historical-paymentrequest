@@ -164,9 +164,10 @@
       </p> 
       <dl> 
         <dt>Payment Request Document Architecture</dt>
-        <dd>The terms <dfn data-lt="payment method|payment methods">Payment Method</dfn> and
-        <dfn data-lt="payment app|payment apps">Payment App</dfn> are defined by the Payment Request
-        Architecture document [[PAYMENTARCH]].</dd>
+        <dd>The terms <dfn data-lt="payment method|payment methods">Payment Method</dfn>,
+        <dfn data-lt="payment app|payment apps">Payment App</dfn>, and <dfn>Payment Transaction
+        Message Specification</dfn> are defined by the Payment Request Architecture document
+        [[PAYMENTARCH]].</dd>
         <dt>Payment Request Document Architecture</dt>
         <dd>The term <dfn data-lt="payment method identifier|payment method identifiers">Payment
         Method Identifier</dfn> is defined by the Payment Method Identifiers specification
@@ -249,7 +250,7 @@
 
       <pre class="example highlight">
 var payment = new PaymentRequest(supportedMethods, details, options, data);
-payment.addEventListener("shippingAddressChange", function (changeEvent) {
+payment.addEventListener("shippingaddresschange", function (changeEvent) {
     // Process shipping address change
 });
 
@@ -299,27 +300,27 @@ payment.show().then(function(paymentResponse) {
             }
           </pre>
 
+          <p>The <code>options</code> object contains information about what options the web page
+          wishes to use from the payment request system.</p>
+
           <pre class="example highlight">
             {
               "requestShipping": true
             }
           </pre>
 
-          <p>The <code>options</code> object contains information about what options the web page
-          wishes to use from the payment request system.</p>
-
           <p><code>data</code> is a <a>JSON object</a> that provides optional information that might
           be needed by the supported <a>payment methods</a>.</p>
           <pre class="example highlight">
-{
-  "bobpay.com": {
-      "merchantIdentifier": "XXXX",
-      "bobPaySpecificField": true
-  },
-  "bitcoin": {
-      "address": "XXXX"
-  }
-}
+            {
+              "bobpay.com": {
+                  "merchantIdentifier": "XXXX",
+                  "bobPaySpecificField": true
+              },
+              "bitcoin": {
+                  "address": "XXXX"
+              }
+            }
           </pre>
         </div>
 
@@ -401,10 +402,6 @@ payment.show().then(function(paymentResponse) {
             than zero, then <a>throw</a> an <a><code>InvalidAccessError</code></a>.
           </li>
           <li>
-            If <em>options</em> does not contain a value for <code>requestShipping</code> then set
-            the value for <code>requestShipping</code> on <em>options</em> to <code>false</code>.
-          </li>
-          <li>
             If <em>data</em> is not a JSON object, then <a>throw</a> an <a><code>InvalidAccessError</code></a>.
           </li>
           <li>
@@ -482,7 +479,7 @@ payment.show().then(function(paymentResponse) {
       <section>
         <h2>shippingAddress</h2>
         <p>
-          <code><dfn>shippingAddress</dfn></code> is populated when the user provides a shipping
+          <code>shippingAddress</code> is populated when the user provides a shipping
           address. It is <em>null</em> by default.
           When a user provides a shipping address, the <a>shipping address changed algorithm</a> runs.
         </p>
@@ -495,7 +492,7 @@ payment.show().then(function(paymentResponse) {
       <section>
         <h2>shippingOption</h2>
         <p>
-          <code><dfn>shippingOption</dfn></code> is populated when the user chooses a shipping
+          <code>shippingOption</code> is populated when the user chooses a shipping
           option. It is <em>null</em> by default.
           When a user chooses a shipping option, the <a>shipping option changed algorithm</a> runs.
         </p>
@@ -515,8 +512,8 @@ payment.show().then(function(paymentResponse) {
       <h2>CurrencyAmount</h2>
       <pre class="idl">
 dictionary CurrencyAmount {
-  DOMString currencyCode;
-  DOMString value;
+  required DOMString currencyCode;
+  required DOMString value;
 };
       </pre>
       <p>
@@ -532,7 +529,7 @@ dictionary CurrencyAmount {
         <dt><code><dfn>value</dfn></code></dt>
         <dd>
           A string containing the decimal monetary value. The string MUST use a single U+002E FULL
-          STOP character as the decimal separator. The string MUST begin with a sing U+002D HYPHEN-MINUS
+          STOP character as the decimal separator. The string MUST begin with a single U+002D HYPHEN-MINUS
           character if the value is negative. All other characters must be characters in the range
           U+0030 DIGIT ZERO (0) to U+0039 DIGIT NINE (9).
           <div class="note">
@@ -594,7 +591,7 @@ dictionary PaymentDetails {
       <h2>PaymentOptions dictionary</h2>
       <pre class="idl">
 dictionary PaymentOptions {
-  boolean requestShipping;
+  boolean requestShipping = false;
 };
       </pre>
 
@@ -622,9 +619,9 @@ dictionary PaymentOptions {
       <h2>PaymentItem dictionary</h2>
       <pre class="idl">
         dictionary PaymentItem {
-          string id;
-          string label;
-          CurrencyAmount amount;
+          required DOMString id;
+          required DOMString label;
+          required CurrencyAmount amount;
           boolean shipping;
         };
       </pre>
@@ -657,8 +654,8 @@ dictionary PaymentOptions {
       </p>
       <dl>
         <dt><code>shipping</code></dt>
-        <dd>If the <code>shipping</code> field is included, then it indicates whether this
-        item represents the shipping cost when set to <code>true</code>. The <a>user agent</a>
+        <dd>If the <code>shipping</code> field is included and set to <code>true</code>, then
+        this indicates that the item is the cost of shipping. The <a>user agent</a>
         MAY use this value to display the item differently in the user interface, perhaps
         relating it to the available shipping options.</dd>
       </dl>
@@ -672,7 +669,7 @@ dictionary PaymentOptions {
         };
       </pre>
       <p>
-        If the <a>requestShipping</a> flag was set to <code>true</code> in the <a>PaymentDetails</a>
+        If the <a>requestShipping</a> flag was set to <code>true</code> in the <a>PaymentOptions</a>
         passed to the <a>PaymentRequest</a> constructor, then the <a>user agent</a> will populate the
         <code>shippingAddress</code> field of the <a><code>PaymentRequest</code></a> object with
         the user's selected shipping address.
@@ -886,7 +883,7 @@ dictionary PaymentRequestUpdateEventInit : EventInit {
           <li>Set the <em>updating</em> flag on <em>request</em> to <em>true</em>.</li>
           <li>
             The <a>user agent</a> SHOULD disable the user interface that allows the user to accept
-            the payment request. This is to ensure that they payment is not accepted until the web page
+            the payment request. This is to ensure that the payment is not accepted until the web page
             has made changes required by the change. The web page MUST call <a><code>updatePaymentRequest</code></a>
             (even with no changes) to indicate that the payment request is valid again.
             <p>The <a>user agent</a> SHOULD disable any part of the user interface that could cause
@@ -991,7 +988,8 @@ dictionary PaymentRequestUpdateEventInit : EventInit {
           <li>
             Set the <code>details</code> attribute value of <em>response</em> to a <a>JSON object</a>
             containing the <a>payment method</a> specific message used by the merchant to process
-            the transaction.
+            the transaction. The format of this response will be defined by a <a>Payment Transaction
+            Message Specification</a>.
           </li>
           <li>
             Set the <a><code>state</code></a> of <em>request</em> to <code>accepted</code>.
