@@ -216,7 +216,6 @@
         [Constructor(sequence&lt;DOMString&gt; supportedMethods, PaymentDetails details, optional PaymentOptions options, optional object data)]
         interface PaymentRequest : EventTarget {
           Promise&lt;PaymentResponse&gt; show();
-          void complete(boolean success);
           void abort();
 
           readonly attribute ShippingAddress? shippingAddress;
@@ -416,24 +415,6 @@
       </section>
 
       <section>
-        <h2>complete()</h2>
-        <p>The <code><dfn>complete</dfn></code> method must be called after the user has accepted the payment
-        request and the [[\acceptPromise]] has been resolved. The <code>complete</code> method
-        takes a boolean argument that indicates the payment was successfully processed if <code>true</code> and
-        that processing failed if <code>false</code>. Calling the <code>complete</code> method tells the user
-        agent that the user interaction is over (and should cause any remaining user interface to be closed).</p>
-
-        <p>The <a><code>complete</code></a> method MUST act as follows:</p>
-        <ol>
-          <li>If the value of the [[\state]] is not <em>accepted</em> then
-          <a>throw</a> an <a><code>InvalidStateError</code></a>.</li>
-          <li>Set the value of the internal slot [[\state]] to <em>closed</em>.</li>
-          <li>Return from the method and asynchronously perform the remaining steps.</li>
-          <li>Close down any remaining user interface</li>
-        </ol>
-      </section>
-
-      <section>
         <h2>abort()</h2>
         <p>The <code><dfn>abort</dfn></code> method may be called if the web page wishes to abort the payment
         request after the <a><code>show</code></a> method has been called and before the [[\acceptPromise]]
@@ -453,7 +434,7 @@
         <h2>State transitions</h2>
         <div class="note">
           <p>The internal slot [[\state]] follows the following state transitions:</p>
-          <img src="state-transitions.svg" width="758" height="235">
+          <img src="state-transitions.svg" width="608" height="235">
         </div>
       </section>
 
@@ -483,10 +464,6 @@
         </p>
       </section>
 
-      <div class="issue" data-number="32" title="Should the web page be able to provide status information before calling complete()">
-      There is an open issue about whether there should be a way for a merchant to keep the user
-      informed about the progress of a tranaction after the user approves the payment request.
-      </div>
     </section>
 
     <section>
@@ -700,10 +677,12 @@ dictionary PaymentOptions {
     <section>
       <h2>PaymentResponse interface</h2>
       <pre class="idl">
-interface PaymentResponse {
-  readonly attribute DOMString methodName;
-  readonly attribute object details;
-};
+        interface PaymentResponse {
+          readonly attribute DOMString methodName;
+          readonly attribute object details;
+
+          Promise&lt;void&gt; complete(boolean success);
+        };
       </pre>
 
       <p>
@@ -722,6 +701,30 @@ interface PaymentResponse {
         process the transaction and determine successful fund transfer.
       </dd>
       </dl>
+
+      <section>
+        <h2>complete()</h2>
+        <p>The <code><dfn>complete</dfn></code> method must be called after the user has accepted the payment
+        request and the [[\acceptPromise]] has been resolved. The <code>complete</code> method
+        takes a boolean argument that indicates the payment was successfully processed if <code>true</code> and
+        that processing failed if <code>false</code>. Calling the <code>complete</code> method tells the user
+        agent that the user interaction is over (and should cause any remaining user interface to be closed).</p>
+
+        <p>The <a><code>complete</code></a> method MUST act as follows:</p>
+        <ol>
+          <li>Let <em>promise</em> be a new <a>Promise</a>.</li>
+          <li>Set the value of the internal slot [[\state]] to <em>closed</em>.</li>
+          <li>Return <em>promise</em> and asynchronously perform the remaining steps.</li>
+          <li>Close down any remaining user interface.</li>
+          <li>Resolve <em>promise</em> with <code>undefined</code>.</li>
+        </ol>
+
+        <div class="issue" data-number="32" title="Should the web page be able to provide status information before calling complete()">
+        There is an open issue about whether there should be a way for a merchant to keep the user
+        informed about the progress of a tranaction after the user approves the payment request.
+        </div>
+      </section>
+
     </section>
 
     <section>
@@ -974,7 +977,7 @@ dictionary PaymentRequestUpdateEventInit : EventInit {
             Message Specification</a>.
           </li>
           <li>
-            Set <em>request</em>@[[\state]] to <em>accepted</em>.
+            Set <em>request</em>@[[\state]] to <em>closed</em>.
           </li>
           <li>
             Resolve the pending promise <em>request</em>@[[\acceptPromise]].
