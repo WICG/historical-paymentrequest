@@ -188,7 +188,8 @@
         </dd>
         <dt>DOM4</dt> 
         <dd>
-        The <code><dfn>Event</dfn></code> type and the term <dfn>fire an event</dfn> are defined by [[!DOM4]].
+        The <code><dfn>Event</dfn></code> type and the terms <dfn>fire an event</dfn>, <dfn>dispatch flag</dfn>,
+        <dfn>stop propagation flag</dfn>, and <dfn>stop immediate propagation flag</dfn> are defined by [[!DOM4]].
         <p><dfn>DOMException</dfn> and the following DOMException types from [[!DOM4]] are used:</p>
         <table>
         <tr><th>Type</th><th>Message (optional)</th></tr>
@@ -517,7 +518,7 @@ dictionary PaymentDetails {
       <p>
         The <code><dfn>PaymentDetails</dfn></code> dictionary is passed to the <a><code>PaymentRequest</code></a>
         constructor and provides information about the requested transaction. The <code>PaymentDetails</code>
-        dictionary is also used to update the payment request using <a><code>updatePaymentRequest</code></a>.
+        dictionary is also used to update the payment request using <a><code>updateWith</code></a>.
       </p>
       <p>
         The following fields are part of the <code>PaymentDetails</code> dictionary:
@@ -536,11 +537,6 @@ dictionary PaymentDetails {
           A sequence containing the different shipping options that the use may choose from.
           <p>If the sequence is empty, then this indicates that the merchant
           cannot ship to the current <a><code>shippingAddress</code></a>.</p>
-          <div class="issue" data-number="2" title="Shipping: should merchant supply supported destinations">
-            <p>We will support shipping restrictions by allowing the web page to call <code>updatePaymentRequest</code>
-            with an empty <code>shippingOptions</code> sequence.</p>
-            <p>We still need to decide how the web page tells the user why they cannot ship to that address.</p>
-          </div>
         </dd>
       </dl>
     </section>
@@ -654,7 +650,7 @@ dictionary PaymentOptions {
       </pre>
       <p>
         The <a>ShippingOption</a> dictionary has fields describing a shipping option. A web page can
-        provide the user with one or more shipping options by calling the <a>updatePaymentRequest</a>
+        provide the user with one or more shipping options by calling the <a>updateWith</a>
         method in response to a change event.
       </p>
       <p>
@@ -753,7 +749,7 @@ dictionary PaymentOptions {
         <pre class="idl">
 [Constructor(DOMString type, optional PaymentRequestUpdateEventInit eventInitDict)]
 interface PaymentRequestUpdateEvent : Event {
-  void updatePaymentRequest(PaymentDetails details);
+  void updateWith(Promise&lt;PaymentDetails&gt; d);
 };
 
 dictionary PaymentRequestUpdateEventInit : EventInit {
@@ -761,38 +757,66 @@ dictionary PaymentRequestUpdateEventInit : EventInit {
         </pre>
         <p>The <a><code>PaymentRequestUpdateEvent</code></a> enables the web page to update
         the details of the payment request in response to a user interaction.</p>
-        <p>The <code><dfn>updatePaymentRequest</dfn></code> method is called with a <a><code>PaymentDetails</code></a>
+        <p>If the web page wishes to update the payment request then it should call <a><code>updateWith</code></a>
+        and provide a promise that will resolve with a <a><code>PaymentDetails</code></a>
         dictionary containing changed values that the <a>user agent</a> SHOULD present to the user.</p>
-        <p>The <a><code>updatePaymentRequest</code></a> method MUST act as follows:</p>
+        <p>The PaymentRequestUpdateEvent constructor MUST set the internal slot [[\waitForUpdate]]
+        to <em>false</em>.</p>
+        <p>The <code><dfn>updateWith</dfn></code> method MUST act as follows:</p>
         <ol>
           <li>
             Let <em>target</em> be the <a><code>PaymentRequest</code></a> object that is the target of
             the event.
           </li>
+          <li>If the <a>dispatch flag</a> is unset, then <a>throw</a> an <a><code>InvalidStateError</code></a>.</li>
           <li>
-            If <em>target</em>@[[\updating]] is <em>false</em>, then <a>throw</a>
+            If [[\waitForUpdate]] is <em>true</em>, then <a>throw</a> an <a><code>InvalidStateError</code></a>.
+          </li>
+          <li>
+            If <em>target</em>@[[\state]] is not <em>interactive</em>, then <a>throw</a> an
+            <a><code>InvalidStateError</code></a>.
+          </li>
+          <li>
+            If <em>target</em>@[[\updating]] is <em>true</em>, then <a>throw</a>
             an <a><code>InvalidStateError</code></a>.
           </li>
+          <li>Set the <a>stop propagation flag</a> and <a>stop immediate propagation flag</a>.</li>
+          <li>Set [[\waitForUpdate]] to <em>true</em>.</li>
+          <li>Set <em>target</em>@[[\updating]] to <em>true</em>.</li>
           <li>
-            If <em>target</em>@[[\state]] is not <em>interactive</em>,
-            then <a>throw</a> an <a><code>InvalidStateError</code></a>. Note: it should not be
-            possible for this to occur since [[\updating]] should only ever be <em>true</em>
-            when the [[\state]] is <em>interactive</em>.
+            The <a>user agent</a> SHOULD disable the user interface that allows the user to accept
+            the payment request. This is to ensure that the payment is not accepted until the web page
+            has made changes required by the change. The web page MUST settle the promise <code>d</code>
+            to indicate that the payment request is valid again.
+            <p>The <a>user agent</a> SHOULD disable any part of the user interface that could cause
+            another update event to be fired. Only one update may be processed at a time.</p>
+            <div class="issue" title="Consider adding a timeout to the updating flag in case page doesn't resolve promise from updateWith">
+              We should consider adding a timeout mechanism so that if the page never resolves
+              the promise within a reasonable amount of time then the user agent behaves as if
+              the promise was rejected.
+            </div>
           </li>
-          <li>
-            If the <code>details</code> argument contains an <code>items</code> value, then copy
-            this value to the <code>items</code> field of <em>target</em>@[[\details]].
+          <li>Return from the method and asynchronously perform the remaining steps.</li>
+          <li>Wait until <code>d</code> settles.</li>
+          <li>If <code>d</code> is resolved with <code>details</code> and <code>details</code> is a
+          <a><code>PaymentDetails</code></a> dictionary, then:
+            <ol>
+              <li>
+                If <code>details</code> contains an <code>items</code> value, then copy
+                this value to the <code>items</code> field of <em>target</em>@[[\details]].
+              </li>
+              <li>
+                If <code>details</code>contains a <code>shippingOptions</code> value, then
+                copy this value to the <em>shippingOptions</em> of the <em>target</em>.
+              </li>
+            </ol>
           </li>
+          <li>Set [[\waitForUpdate]] to <em>false</em>.</li>
+          <li>Set <em>target</em>@[[\updating]] to <em>false</em>.</li>
           <li>
-            If the <code>details</code> argument contains a <code>shippingOptions</code> value, then
-            copy this value to the <em>shippingOptions</em> of the <em>target</em>.
-          </li>
-          <li>
-            Set <em>target</em>@[[\updating]] to <em>false</em>.
-          </li>
-          <li>
-            The method should return and the <a>user agent</a> should asynchronously update the
-            user interface based on the changed values in <em>target</em>@[[\details]].
+            The <a>user agent</a> should update the user interface based on any changed values
+            in <em>target</em>. The user agent SHOULD re-enable user interface elements that might
+            have been disabled in the steps above if appropriate.
           </li>
         </ol>
 
@@ -865,19 +889,6 @@ dictionary PaymentRequestUpdateEventInit : EventInit {
             should ensure that this never occurs.
           </li>
           <li>Let <em>event</em> be a new <a><code>PaymentRequestUpdateEvent</code></a>.</li>
-          <li>Set <em>request</em>@[[\updating]] to <em>true</em>.</li>
-          <li>
-            The <a>user agent</a> SHOULD disable the user interface that allows the user to accept
-            the payment request. This is to ensure that the payment is not accepted until the web page
-            has made changes required by the change. The web page MUST call <a><code>updatePaymentRequest</code></a>
-            (even with no changes) to indicate that the payment request is valid again.
-            <p>The <a>user agent</a> SHOULD disable any part of the user interface that could cause
-            another update event to be fired. Only one update may be processed at a time.</p>
-            <div class="issue" title="Consider adding a timeout to the updating flag in case page doesn't call updatePaymentRequest">
-              We should add a timeout mechanism that sets [[\updating]] to <em>false</em> if the
-              page doesn't call <a><code>updatePaymentRequest</code></a> within a reasonable time.
-            </div>
-          </li>
           <li>
             <a>Queue a task</a> to <a>fire an event</a> named <em>name</em> of type <em>event</em>
             at <em>request</em>.
