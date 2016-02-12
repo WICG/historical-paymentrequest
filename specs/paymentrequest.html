@@ -690,7 +690,7 @@ dictionary PaymentOptions {
       </pre>
 
       <p>
-        A <code>PaymentResponse</code> is returned when a user has selected a payment method and
+        A <code><dfn>PaymentResponse</dfn></code> is returned when a user has selected a payment method and
         approved a payment request. It contains the following fields:
       </p>
       <dl>
@@ -717,7 +717,10 @@ dictionary PaymentOptions {
         <p>The <a><code>complete</code></a> method MUST act as follows:</p>
         <ol>
           <li>Let <em>promise</em> be a new <a>Promise</a>.</li>
-          <li>Set the value of the internal slot [[\state]] to <em>closed</em>.</li>
+          <li>
+            If the value of the internal slot [[\completeCalled]] is <em>true</em>, then <a>throw</a> an <a><code>InvalidStateError</code></a>.
+          </li>
+          <li>Set the value of the internal slot [[\completeCalled]] to <em>true</em>.</li>
           <li>Return <em>promise</em> and asynchronously perform the remaining steps.</li>
           <li>Close down any remaining user interface.</li>
           <li>Resolve <em>promise</em> with <code>undefined</code>.</li>
@@ -1004,6 +1007,9 @@ dictionary PaymentRequestUpdateEventInit : EventInit {
             containing the <a>payment method</a> specific message used by the merchant to process
             the transaction. The format of this response will be defined by a <a>Payment Transaction
             Message Specification</a>.
+          </li>
+          <li>
+            Set <em>response</em>@[[\completeCalled]] to <em>false</em>.
           </li>
           <li>
             Set <em>request</em>@[[\state]] to <em>closed</em>.
