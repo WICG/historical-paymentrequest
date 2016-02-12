@@ -486,10 +486,10 @@ dictionary CurrencyAmount {
         </dd>
         <dt><code><dfn>value</dfn></code></dt>
         <dd>
-          A string containing the decimal monetary value. The string MUST use a single U+002E FULL
-          STOP character as the decimal separator. The string MUST begin with a single U+002D HYPHEN-MINUS
-          character if the value is negative. All other characters must be characters in the range
-          U+0030 DIGIT ZERO (0) to U+0039 DIGIT NINE (9).
+          A string containing the decimal monetary value. If a decimal separator is needed then the string
+          MUST use a single U+002E FULL STOP character as the decimal separator. The string MUST begin
+          with a single U+002D HYPHEN-MINUS character if the value is negative. All other characters must
+          be characters in the range U+0030 DIGIT ZERO (0) to U+0039 DIGIT NINE (9).
           <div class="note">
             The string should match the regular expression <code>^-?[0-9]+(\.[0-9]+)?$</code>.
           </div>
