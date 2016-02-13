@@ -584,7 +584,6 @@ dictionary PaymentOptions {
           required DOMString id;
           required DOMString label;
           required CurrencyAmount amount;
-          boolean shipping;
         };
       </pre>
       <p>
@@ -610,16 +609,6 @@ dictionary PaymentOptions {
             the <a>payment method</a> might support.
           </div>
         </dd>
-      </dl>
-      <p>
-        The following fields are optional and MAY be included in a <code>PaymentItem</code>:
-      </p>
-      <dl>
-        <dt><code>shipping</code></dt>
-        <dd>If the <code>shipping</code> field is included and set to <code>true</code>, then
-        this indicates that the item is the cost of shipping. The <a>user agent</a>
-        MAY use this value to display the item differently in the user interface, perhaps
-        relating it to the available shipping options.</dd>
       </dl>
     </section>
 
