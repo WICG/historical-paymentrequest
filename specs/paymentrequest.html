@@ -640,9 +640,9 @@ dictionary PaymentOptions {
       <h2>ShippingOption interface</h2>
       <pre class="idl">
         dictionary ShippingOption {
-          string id;
-          string label;
-          CurrencyAmount amount;
+          required string id;
+          required string label;
+          required CurrencyAmount amount;
         };
       </pre>
       <p>
