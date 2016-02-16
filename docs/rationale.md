@@ -24,14 +24,13 @@ We've made decisions in this API that may sacrifice some measure of extensbility
 
 The majority of checkout experiences across the web function the same. They take the user through a 4-5 step checkout flow and request the same subset of information over and over again (name, shipping address, email, etc). Worse yet, these multiple steps are usually spread out across multiple pages, which can be painful for users on slower or unreliable connections. Websites try to solve this problem by asking users to create an account, but this doesn't help new users or users who are only interested in making a single purchase.
 
-![Current standard checkout flow](standard-checkout-flow.png)
-(Common checkout flow today)
+![Current standard checkout flow](./images/standard-checkout-flow.png)
 
 Browsers, however, are in a special position to be able to solve this problem. Unlike websites, browsers aren't bound by origin and thus can store information about users that can be used across multiple origins. By calling PaymentRequest, then, a merchant is effectively asking the browser to collect the critical information necessary to complete a transaction. In the best case, browsers can leverage information they already have stored for users. In the worst case, browsers can provide fast, native UI for collecting this information before passing it back to the merchant in a JSON blob.
 
 This new flow we've enabled could look something like this:
 
-![Current standard checkout flow](new-checkout-flow.png)
+![Current standard checkout flow](./images/new-checkout-flow.png)
 
 By letting the browser leverage information it already had about the user (shipping address preferences, contact information, and even payment credentials), users can move through flows much faster and will much less difficulty.
 
