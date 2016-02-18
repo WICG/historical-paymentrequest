@@ -10,7 +10,9 @@ This document is an attempt to try and provide an explanation for why the Paymen
 
 Our plan is to take an iterative approach in addressing these core problems. We don't expect to solve every problem or address every payment use case in the first version. This means there will be some checkout flows or payment systems we might not be able to support. That's okay. We want to start simple and address the core use cases that represent the majority of transactions for consumers: the purchase of physical and digital goods.
 
-We've made decisions in this API that may sacrifice some measure of extensbility for providing immediate value now. This was intentional. Alex Russell, W3C TAG Member, recently gave a speech at the Extensible Web Summit in Melbourne in which he [speaks to this very topic](https://infrequently.org/2016/01/ews-melbourne/) and sums up our approach:
+Starting small like this also encourages support across all major browsers, something we see as critical for the adoption of this API. Merchants are very careful about updating their purchasing flow - and rightfully so - so it's important that calling paymentRequest produces a consistent experience for users across platforms and channels. Starting small lowers the barrier for entry for both merchants and browsers.
+
+In light of this, we've made decisions in this API that may sacrifice some measure of extensbility for providing immediate value now. This was intentional. Alex Russell, W3C TAG Member, recently gave a speech at the Extensible Web Summit in Melbourne in which he [speaks to this very topic](https://infrequently.org/2016/01/ews-melbourne/) and sums up our approach:
 
 > My specific goal, then, is to improve the rate of progress on the web for the benefit of users and developers, in that order.
 
@@ -24,15 +26,16 @@ We've made decisions in this API that may sacrifice some measure of extensbility
 
 The majority of checkout experiences across the web function the same. They take the user through a 4-5 step checkout flow and request the same subset of information over and over again (name, shipping address, email, etc). Worse yet, these multiple steps are usually spread out across multiple pages, which can be painful for users on slower or unreliable connections. Websites try to solve this problem by asking users to create an account, but this doesn't help new users or users who are only interested in making a single purchase.
 
-![Current standard checkout flow](./images/standard-checkout-flow.png)
+![Current standard checkout flow](standard-checkout-flow.png)
+(Common checkout flow today)
 
 Browsers, however, are in a special position to be able to solve this problem. Unlike websites, browsers aren't bound by origin and thus can store information about users that can be used across multiple origins. By calling PaymentRequest, then, a merchant is effectively asking the browser to collect the critical information necessary to complete a transaction. In the best case, browsers can leverage information they already have stored for users. In the worst case, browsers can provide fast, native UI for collecting this information before passing it back to the merchant in a JSON blob.
 
 This new flow we've enabled could look something like this:
 
-![Current standard checkout flow](./images/new-checkout-flow.png)
+![Current standard checkout flow](new-checkout-flow.png)
 
-By letting the browser leverage information it already had about the user (shipping address preferences, contact information, and even payment credentials), users can move through flows much faster and will much less difficulty.
+By letting the browser leverage information it already had about the user (shipping address preferences, contact information, and even payment credentials), users can move through flows much faster and with much less difficulty.
 
 ### Safer transactions on the web
 
@@ -57,3 +60,25 @@ This is all possible with PaymentRequest. It can be used for the whole checkout 
 Our hope is that this API is a starting point. A way to provide immediate value to a problem where a solution is sorely needed, as well as a way to begin the conversation to better understand the needs of merchants and developers.
 
 Feedback is not only welcome, but encouraged.
+
+### On Privacy
+
+Protecting user data and ensuring that it is only shared with merchants via the consent of the user is incredibly important to us. So while it is possible that we could implement a payment system with less friction, whereby information is automatically shared with the merchants requesting it, we don't think this is in the best interest of users. This is why PaymentRequest is designed to always invoke UI.
+
+### FAQ
+
+**Wasn't something like this tried before with requestAutocomplete? Why a new API? What's different now?**
+
+RequestAutocomplete was a good starting point, but it had a few limitations:
+
+1. It was designed to only work with credit cards. This is great for some regions, but it doesn't work well in demographics where credit cards are not the primary form of payment.
+2. It didn't provide a great mechanism to address the problem of removing raw credit card numbers from the ecosystem. It also didn't allow us to bring newer forms of payment that leverage strong device authentication (e.g. Apple Pay, Android Pay, Samsung Pay, etc) into the web platform.
+3. It failed to get much cross-browser traction, most likely due to the issues above as well ecosystem challenges.
+
+PaymentRequest addresses the issues above and has been a collaborative effort from the beginning. We hope that a combination of cross-browser adoption along with the recent rapid rate of progress in the payments ecosystem will alow us to fundamentally improve payments on the web plaform.
+
+**Why collect shipping addresses but not things like coupon codes, loyalty cards, etc?**
+
+This goes back to the idea of starting simple and taking an iterative approach with this API. Things like loyalty cards and coupons are an important part of the checkout process, but they aren't *essential.* Shipping information, however, is a fundamental part of every checkout flow that involves the purchase of a physical good. Furthermore, if our goal, as stated above, is to fundamentally improve the checkout experience on the web, we can't just optimize the final step of the checkout flow (i.e. the collection of payment information).
+
+In the future, based on feedback from merchants and developers, we may add support for coupon codes, loyalty cards, and more.
