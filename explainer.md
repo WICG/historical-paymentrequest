@@ -1,0 +1,1 @@
+The explainer has moved to [docs/explainer](./docs/explainer.md).
