@@ -73,7 +73,7 @@ RequestAutocomplete was a good starting point, but it had a few limitations:
 
 1. It was designed to only work with credit cards. This is great for some regions, but it doesn't work well in demographics where credit cards are not the primary form of payment.
 2. It didn't provide a great mechanism to address the problem of removing raw credit card numbers from the ecosystem. It also didn't allow us to bring newer forms of payment that leverage strong device authentication (e.g. Apple Pay, Android Pay, Samsung Pay, etc) into the web platform.
-3. It failed to get much cross-browser traction, most likely due to the issues above as well ecosystem challenges.
+3. It failed to get much cross-browser traction, most likely due to the issues above as well as ecosystem challenges.
 
 PaymentRequest addresses the issues above and has been a collaborative effort from the beginning. We hope that a combination of cross-browser adoption along with the recent rapid rate of progress in the payments ecosystem will alow us to fundamentally improve payments on the web plaform.
 
