@@ -135,7 +135,8 @@
       <dd> 
         <p> 
         A <dfn data-lt="user agents">user agent</dfn> MUST behave as described in this specification 
-        in order to be considered conformant. 
+        in order to be considered conformant. In this specification, <a>user agent</a> means a <em>Web
+        browser or other interactive user agent</em> as defined in [[!HTML5]].
         </p> 
         <p> 
         User agents MAY implement algorithms given in this 
@@ -178,11 +179,11 @@
         <dfn>top-level browsing context</dfn> are defined by [[!HTML5]].</dd>
         <dt>ECMA-262 6th Edition, The ECMAScript 2015 Language Specification</dt>
         <dd>
-          The terms <dfn>Promise</dfn>, <dfn>internal slot</dfn>, <dfn>JSON.stringify</dfn>, and <dfn>JSON.parse</dfn> are
+          The terms <dfn>Promise</dfn>, <dfn>internal slot</dfn>, <dfn><code>TypeError</code></dfn>, <dfn>JSON.stringify</dfn>, and <dfn>JSON.parse</dfn> are
           defined by [[!ECMA-262-2015]].
           <p>This document uses the format <em>object</em>@[[\slotname]] to mean the internal slot [[\slotname]]
           of the object <em>object</em>.</p>
-          <p>The term <dfn>JSON object</dfn> used in this specification means an object that can
+          <p>The term <dfn>JSON-serializable object</dfn> used in this specification means an object that can
           be serialized to a string using <a>JSON.stringify</a> and later deserialized back to an object
           using <a>JSON.parse</a> with no loss of data.</p>
         </dd>
@@ -193,11 +194,9 @@
         <p><dfn>DOMException</dfn> and the following DOMException types from [[!DOM4]] are used:</p>
         <table>
         <tr><th>Type</th><th>Message (optional)</th></tr>
-        <tr><td><code><dfn>InvalidAccessError</dfn></code></td><td>The object does not support the operation or argument</td></tr>
         <tr><td><code><dfn>InvalidStateError</dfn></code></td><td>The object is in an invalid state</td></tr>
         <tr><td><code><dfn>NotSupportedError</dfn></code></td><td>The payment method was not supported</td></tr>
         <tr><td><code><dfn>SecurityError</dfn></code></td><td>The operation is only supported in a secure context</td></tr>
-        <tr><td><code><dfn>SyntaxError</dfn></code></td><td>A required parameter was missing or out-of-range</td></tr>
         </table>
         </dd>
         <dt>WebIDL</dt>
@@ -250,7 +249,7 @@
           // Process paymentResponse
           // paymentResponse.methodName contains the selected payment method
           // paymentResponse.details contains a payment method specific response
-          payment.complete(true);
+          paymentResponse.complete(true);
         }).catch(function(err) {
           console.error("Uh oh, something bad happened", err.message);
         });
@@ -303,7 +302,7 @@
             }
           </pre>
 
-          <p><code>data</code> is a <a>JSON object</a> that provides optional information that might
+          <p><code>data</code> is a <a>JSON-serializable object</a> that provides optional information that might
           be needed by the supported <a>payment methods</a>.</p>
           <pre class="example highlight">
             {
@@ -324,7 +323,7 @@
         <ol>
           <li>
             If the length of the <code>supportedMethods</code> sequence is zero, then <a>throw</a>
-            a <a><code>SyntaxError</code></a>.
+            a <a><code>TypeError</code></a>.
           </li>
           <li>
             If the <a>global object</a> of the script calling the constructor is
@@ -344,15 +343,18 @@
           </li>
           <li>
             If <code>details</code> does not contain a sequence of <code>items</code> with length greater
-            than zero, then <a>throw</a> an <a><code>InvalidAccessError</code></a>.
+            than zero, then <a>throw</a> a <a><code>TypeError</code></a>.
           </li>
           <li>
-            If <code>data</code> is not a <a>JSON object</a>, then <a>throw</a> an <a><code>InvalidAccessError</code></a>.
+            If <code>data</code> is not a <a>JSON-serializable object</a>, then <a>throw</a> a <a><code>TypeError</code></a>.
           </li>
           <li>
-            The name of each top level field of <code>data</code> MUST match a <a>payment method identifier</a>
-            in <code>supportedMethods</code>. The value of each top level field MUST be a <a>JSON object</a>.
-            If this is not the case, then <a>throw</a> an <a><code>InvalidAccessError</code></a>.
+            If the name of any top level field of <code>data</code> does not match one of the <a>payment method identifiers</a>
+            in <code>supportedMethods</code>, then <a>throw</a> a <a><code>TypeError</code></a>.
+          </li>
+          <li>
+            If the value of any top level field is not a <a>JSON-serializable object</a>, then
+            <a>throw</a> a <a><code>TypeError</code></a>.
           </li>
           <li>Let <em>request</em> be a new <a><code>PaymentRequest</code></a>.</li>
           <li>Store <code>supportedMethods</code> into <em>request</em>@[[\supportedMethods]].</li>
@@ -690,7 +692,7 @@ dictionary PaymentOptions {
       </dd>
       <dt><code><dfn>details</dfn></code></dt>
       <dd>
-        A <a>JSON object</a> that provides a <a>payment method</a> specific message used by the merchant to
+        A <a>JSON-serializable object</a> that provides a <a>payment method</a> specific message used by the merchant to
         process the transaction and determine successful fund transfer.
       </dd>
       </dl>
@@ -711,6 +713,10 @@ dictionary PaymentOptions {
           </li>
           <li>Set the value of the internal slot [[\completeCalled]] to <em>true</em>.</li>
           <li>Return <em>promise</em> and asynchronously perform the remaining steps.</li>
+          <li>
+            Pass the value of <code>success</code> to the <a>Payment App</a> that accepted the
+            payment request.
+          </li>
           <li>Close down any remaining user interface.</li>
           <li>Resolve <em>promise</em> with <code>undefined</code>.</li>
         </ol>
@@ -992,7 +998,7 @@ dictionary PaymentRequestUpdateEventInit : EventInit {
             for the <a>payment method</a> that the user selected to accept the payment.
           </li>
           <li>
-            Set the <code>details</code> attribute value of <em>response</em> to a <a>JSON object</a>
+            Set the <code>details</code> attribute value of <em>response</em> to a <a>JSON-serializable object</a>
             containing the <a>payment method</a> specific message used by the merchant to process
             the transaction. The format of this response will be defined by a <a>Payment Transaction
             Message Specification</a>.
