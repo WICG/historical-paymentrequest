@@ -177,27 +177,28 @@ var exampleResponse = {
 	'payment_method': 'bobPayToken',
 	'token': 'BPT-09876'
 };
-window.top.postMessage(JSON.stringify(exampleResponse), *);
+
+window.top.postMessage(JSON.stringify(exampleResponse), '*');
 ```
 
 Lastly, the original PaymentRequest promise is resolved and the merchant is able to parse the reply from the Payment App:
 
 ```js
-	paymentRequest.show().then(function(paymentResponse) {
-		console.log(JSON.parse(paymentResponse));
-		/*
-		{
-			'methodName': 'bobpay.xyz',
-			'details': {
-				'id': 'BOBPAY-123456',
-				'create_time': '2013-01-31T04:12:02Z',
-				'state': 'approved',
-				'payment_method': 'bobPayToken',
-				'token': 'BPT-09876'
-			}
+paymentRequest.show().then(function(paymentResponse) {
+	console.log(JSON.parse(paymentResponse));
+	/*
+	{
+		'methodName': 'bobpay.xyz',
+		'details': {
+			'id': 'BOBPAY-123456',
+			'create_time': '2013-01-31T04:12:02Z',
+			'state': 'approved',
+			'payment_method': 'bobPayToken',
+			'token': 'BPT-09876'
 		}
-		*/
-	});
+	}
+	*/
+});
 ```
 
 ### Increased Sophistication
