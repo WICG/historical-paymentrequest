@@ -2,58 +2,62 @@
 <html>
   <head>
     <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="//w3c.github.io/vctf/stylesheets/stylesheet.css" media="screen">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <title>Google/Microsoft PaymentRequest API Proposal</title>
+    <title>PaymentRequest API Proposal</title>
+    <link href="https://www.w3.org/community/src/css/spec/cg-draft.css" rel="stylesheet">
+    <style>
+    dt { margin-top: 0.75em; }
+    </style>
   </head>
-
   <body>
-    <div id="container">
-      <div class="inner">
+    <header>
+      <h1>PaymentRequest API Proposal</h1>
+    </header>
 
-        <header>
-          <h1>paymentRequest()</h1>
-          <h2>Google/Microsoft PaymentRequest API Proposal</h2>
-        </header>
+    <section>
+      <h2>Explainers</h2>
+      <dl>
+        <dt><a href="https://github.com/WICG/paymentrequest/blob/gh-pages/docs/rationale.md">PaymentRequest API Rationale</a></dt>
+        <dd>
+        This document is an attempt to try and provide an explanation for why the PaymentRequest API
+        is structured the way it is and our goals in choosing such a direction.
+        </dd>
+        <dt><a href="https://github.com/WICG/paymentrequest/blob/gh-pages/docs/explainer.md">PaymentRequest Explainer</a></dt>
+        <dd>
+        The (slightly outdated) explainer document describes the original motivation for the API proposal.
+        </dd>
+      </dl>          
+    </section>
 
-        <hr>
-
-        <section id="main_content">
-          <h3 id="welcome">The Specifications</h3>
-
-          <dl>
-            <dt><a href="specs/architecture.html">Architecture</a></dt>
-            <dd>
-The Payment Request architecture is designed to separate different concerns of 
-the Payment Request system into different specifications so that they can be 
-discussed and moved forward independently. This document describes the 
-architecture and explains what different specifications may be created and 
-how the relate to each other.
-            </dd>
-            <dt><a href="specs/method-identifiers.html">Payment Method Identifiers</a></dt>
-            <dd>
-The <a href="specs/paymentrequest.html">PaymentRequest API</a> requires that 
-merchants supply a list identifiers for supported payment methods. This 
-document defines those identifier strings and how they are created.
-            </dd>
-            <dt><a href="specs/paymentrequest.html">PaymentRequest API</a></dt>
-            <dd>
-This is a proposal for a new web API that will allow merchants (i.e. websites 
-selling physical or digital goods) to easily accept payments from multiple 
-payment methods with minimal integration.
-            </dd>
-          </dl>          
-        </section>
-
-        <footer>
-          Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
-        </footer>
+    <section>
+      <h2>Specifications</h2>
+      <dl>
+        <dt><a href="specs/architecture.html">Architecture</a></dt>
+        <dd>
+          The Payment Request architecture is designed to separate different concerns of 
+          the Payment Request system into different specifications so that they can be 
+          discussed and moved forward independently. This document describes the 
+          architecture and explains what different specifications may be created and 
+          how the relate to each other.
+        </dd>
+        <dt><a href="specs/method-identifiers.html">Payment Method Identifiers</a></dt>
+        <dd>
+          The <a href="specs/paymentrequest.html">PaymentRequest API</a> requires that 
+          merchants supply a list identifiers for supported payment methods. This 
+          document defines those identifier strings and how they are created.
+        </dd>
+        <dt><a href="specs/paymentrequest.html">PaymentRequest API</a></dt>
+        <dd>
+          This is a proposal for a new web API that will allow merchants (i.e. websites 
+          selling physical or digital goods) to easily accept payments from multiple 
+          payment methods with minimal integration.
+        </dd>
+        <dt><a href="specs/basic-card-payment.html">Basic Card Payment</a></dt>
+        <dd>
+          This specification is a <em>Payment Transaction Message Specification</em> used by the
+          PaymentRequest API to support payment by payment cards such as credit or debit cards.
+        </dd>
+      </dl>          
+    </section>
         
-      </div>
-    </div>
   </body>
 </html>
