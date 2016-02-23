@@ -439,7 +439,7 @@
       </section>
 
       <section>
-        <h2>State transitions</h2>
+        <h2 id="state-transitions">State transitions</h2>
         <div class="note">
           <p>The internal slot [[\state]] follows the following state transitions:</p>
           <img src="state-transitions.svg" width="608" height="235">
@@ -470,6 +470,55 @@
           <code><dfn>onshippingoptionchange</dfn></code> is an <code>EventHandler</code> for an
           <code>Event</code> named <code>shippingoptionchange</code>.
         </p>
+      </section>
+
+      <section>
+        <h2>Internal Slots</h2>
+        <p>Instances of <a><code>PaymentRequest</code></a> are created with the internal slots in
+        the following table:</p>
+        <table>
+          <tr><th>Internal Slot</th><th>Description (<em>non-normative</em>)</th></tr>
+          <tr>
+            <td>[[\supportedMethods]]</td>
+            <td>The <code>supportMethods</code> supplied to the constructor.</td>
+          </tr>
+          <tr>
+            <td>[[\details]]</td>
+            <td>
+              The current <a><code>PaymentDetails</code></a> for the payment request initially
+              supplied to the constructor and then updated with calls to <a><code>updateWith</code></a>.</td>
+            </td>
+          </tr>
+          <tr>
+            <td>[[\options]]</td>
+            <td>The <a><code>PaymentOptions</code></a> supplied to the constructor.</td>
+          </tr>
+          <tr>
+            <td>[[\data]]</td>
+            <td>
+              The payment method specific <code>data</code> supplied to the constructor used
+              by a <a>Payment App</a> to influence the app's behavior.
+            </td>
+          </tr>
+          <tr>
+            <td>[[\state]]</td>
+            <td>The current <a class="internalDFN" href="#state-transitions">state</a> of the payment request.</td>
+          </tr>
+          <tr>
+            <td>[[\updating]]</td>
+            <td>
+               <em>true</em> is there is a pending <a><code>updateWith</code></a> call to update
+               the payment request and <em>false</em> otherwise.
+            </td>
+          </tr>
+          <tr>
+            <td>[[\acceptPromise]]</td>
+            <td>
+              The pending <a>Promise</a> created during <a><code>show</code></a> that will be
+              resolved if the user accepts the payment request.
+            </td>
+          </tr>
+        </table>
       </section>
 
     </section>
@@ -725,6 +774,22 @@ dictionary PaymentOptions {
         There is an open issue about whether there should be a way for a merchant to keep the user
         informed about the progress of a tranaction after the user approves the payment request.
         </div>
+      </section>
+
+      <section>
+        <h2>Internal Slots</h2>
+        <p>Instances of <a><code>PaymentResponse</code></a> are created with the internal slots in
+        the following table:</p>
+        <table>
+          <tr><th>Internal Slot</th><th>Description (<em>non-normative</em>)</th></tr>
+          <tr>
+            <td>[[\completeCalled]]</td>
+            <td>
+              <em>true</em> if the <a><code>complete</code></a> method has been called and <em>false</em>
+              otherwise.
+            </td>
+          </tr>
+        </table>
       </section>
 
     </section>
