@@ -1,77 +1,22 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Payment Method Identifiers</title>
     <meta charset='utf-8'>
-    <script src='https://www.w3.org/Tools/respec/respec-w3c-common'
-            async class='remove'></script>
-    <script class='remove'>
-      var respecConfig = {
-          specStatus: "CG-DRAFT",
-          shortName:  "payment-method-id",
-          editors: [
-                {   name:       "Adrian Bateman",
-                    company:    "Microsoft Corporation" }
-          ],
-          //previousMaturity: "FPWD",
-          //previousPublishDate:  "1977-03-15",
-          wg:           "Web Platform Incubator Community Group",
-          wgURI:        "https://www.w3.org/community/wicg/",
-      };
-    </script>
+    <title>Payment Method Identifiers</title>
+    <link href="https://www.w3.org/community/src/css/spec/cg-draft.css" rel="stylesheet">
   </head>
   <body>
-    <section id='abstract'>
-      <p>
-        The <a href="paymentrequest.html">PaymentRequest API</a> requires that merchants supply a list identifiers for supported payment methods. This document defines those identifier strings and how they are created.
-      </p>
-    </section>
-
-    <section id='sotd'>
-      <p>
-        This is very rought draft intended to spark discussion.
-      </p>
-    </section>
-    
-    <section class='informative'>
-      <h2>Introduction</h2>
-        <p>
-          One of the principles of the PaymentRequest API is that merchants must know how to accept payments from the payment methods that they claim to support.
-          This allows the API to abstract away the details of specific payment methods and to add new ones over time without changing the API specification.
-        </p>
-        <p>
-          As part of the paymentRequest() call, the web page provides an array of strings that identify the supported payment methods. This document defines those strings.
-        </p>
-    </section>
+    <header>
+      <h1>Payment Request Identifiers</h1>
+    </header>
 
     <section>
-      <h2>Issues</h2>
-
-        <div class="issue" data-number="34" title="What is the format for payment method identifiers for distributed extensibility">
-          <p>Should the format of the identifiers be URLs (e.g. http://example.com/paymentmethod) or reverse host name (e.g. com.example.paymentmethod) or some other extensible syntax?</p>
-        </div>
-
-        <div class="issue" data-number="35" title="Should well-known identifiers be used for ubiquitous payment methods">
-          <p>Should there be well-known identifiers that are simple strings defined in the spec that don't conform to the distributed extensbility syntax that are used for common payment methods?</p>
-        </div>
-
-        <div class="issue" data-number="27" title="Write-up initial proposal for payment app registration spec">
-          <p>A registration mechanism may exist to install the code for new payment methods into the user agent. This process
-            would add support for a new payment method to the user agent. This mechanism should be defined in a separate specification.</p>
-        </div>
-
-        <div class="issue" data-number="34" title="What is the format for payment method identifiers for distributed extensibility">
-          <p>If the identifier is a URL, should there be a resource that can be fetched from the URL</p>
-          <p>Is there a need to describe the payment method at the URL or provide some other information?</p>
-        </div>
+      <h2>Status</h2>
+      <p>This document has moved to the <a href="https://www.w3.org/Payments/WG/">W3C Web Payments Working Group</a>.
+      You can find the <a href="https://w3c.github.io/browser-payment-api/specs/method-identifiers.html">new version</a> in
+      the <a href="https://github.com/w3c/browser-payment-api">Browser Payment API repo</a>.</p>
+      <p>The <a href="https://cdn.rawgit.com/WICG/paymentrequest/a7b64940f7b6380dea9ad87edc6e27aa933323fa/specs/method-identifiers.html">previous version of this document is available</a> in the GitHub archive.</p>
     </section>
-
-    <section>
-      <h2>Payment Method Identifier</h2>
-      <p>
-        The <dfn>Payment Method Identifier</dfn> is a string that uniquely identifies a payment method that a user can use to complete a transaction. For example, Visa, MasterCard, and American Express are payment methods used in some countries.
-      </p>
-    </section>    
-
+       
   </body>
 </html>
