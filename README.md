@@ -1,7 +1,6 @@
 # paymentRequest
 
-The live version of this specification can be found [here](http://wicg.github.io/paymentrequest/).
+**This repo is being kept for historical purposes.** 
 
-Read the [rationale](./docs/rationale.md) for why we're interested in this work and why the API is designed the way it is.
-
-Read the (slightly outdated) [explainer](./docs/explainer.md) for original motivation behind this work.
+This proposal was presented to the Web Payments Working Group but was not adopted.
+See the [Web Payments Working Group wiki](https://github.com/w3c/webpayments/wiki) for current information about the group's deliverables. 
